@@ -3,7 +3,7 @@
 GeoGuessr Türkiye Topluluğu'nun resmi web sitesi. Turnuvalar, kulüpler,
 rehberler ve topluluk duyuruları için tek adres.
 
-- Site: https://geoturkiye.community (domain yakında aktif olacak)
+- Site: https://geoturkiye.community
 - Discord: https://discord.gg/JqxyV9PxdV
 
 Bağımsız bir topluluk projesidir; GeoGuessr AB ile resmi bir bağı yoktur.
