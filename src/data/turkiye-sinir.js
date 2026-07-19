@@ -1,5 +1,5 @@
 // Türkiye kara sınırı poligonları (enlem, boylam) — basitleştirilmiş.
-// Hem SVG harita bileşeni hem canlı haritadaki rastgele nokta üretimi kullanır.
+// Canlı haritadaki rastgele "tahmin" noktalarının karada kalmasını sağlar.
 
 export const ANADOLU = [
   [41.18, 29.12], [41.16, 29.60], [41.08, 30.30], [41.10, 30.98], [41.20, 31.40],

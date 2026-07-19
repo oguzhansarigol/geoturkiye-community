@@ -11,8 +11,9 @@ Bağımsız bir topluluk projesidir; GeoGuessr AB ile resmi bir bağı yoktur.
 ## Özellikler
 
 - Türkçe ve İngilizce tam çeviri, sağ üstten anlık dil değişimi
-- Canlı harita: CARTO Voyager altlığı, şehir pinleri ve Türkiye sınırları
-  içinde rastgele beliren "canlı tahmin" noktaları (API anahtarı gerektirmez)
+- Canlı harita: Google Maps görünümüne yakın CARTO Voyager altlığı,
+  şehir pinleri, Türkiye sınırları içinde beliren canlı tahmin noktaları
+  ve haritaya tıklayınca fırlayan 5K animasyonu (API anahtarı gerektirmez)
 - Sayfa geçişleri ve kaydırma animasyonları (Motion), hareket azaltma
   tercihine tam saygı
 - Kartografik tasarım dili: topografya desenleri, koordinat etiketleri,
@@ -54,8 +55,8 @@ src/i18n.jsx            Dil durumu ve TR/EN geçişi
 src/ses.js              Arayüz tık sesleri
 src/pages/              Sayfalar: Home, Hakkimizda, Etkinlikler, Kulupler,
                         FaydaliSiteler, Katil
-src/components/         Header, Footer, LiveMap, AnimatedTopo, Ticker,
-                        Reveal, CtaBand ve diğerleri
+src/components/         Header, Footer, LiveMap (canlı harita),
+                        AnimatedTopo, Ticker, Reveal, CtaBand ve diğerleri
 src/styles/global.css   Tasarım sistemi (renk ve font değişkenleri en üstte)
 public/                 Logo, favicon, topografya desenleri, site ikonları,
                         robots.txt, sitemap.xml, _headers, _redirects

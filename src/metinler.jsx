@@ -68,7 +68,7 @@ export const METIN = {
       neH2: "Dört başlıkta GeoGuessrTürkiye",
       neler: [
         { no: "01", baslik: "Turnuvalar & Ligler", to: "/etkinlikler", p: "Kupalardan lige: her seviyeden oyuncunun rekabet edebileceği etkinlikler düzenliyoruz." },
-        { no: "02", baslik: "Rehberler & Meta", to: "/etkinlikler", p: "Ülke tanıma, plaka ve direksiyon ipuçları, kamera nesilleri, bollard'lar… Türkçe kaynak eksikliğini biz kapatıyoruz." },
+        { no: "02", baslik: "Rehberler & Meta", to: "/faydali-siteler", p: "Ülke tanıma, plaka ve direksiyon ipuçları, kamera nesilleri, bollard'lar… Türkçe kaynak eksikliğini biz kapatıyoruz." },
         { no: "03", baslik: "Kulüpler", to: "/kulupler", p: "GeoGuessr üzerindeki resmî kulüplerimiz: katıl, rozetini tak, kulüp yarışmalarında Türkiye'yi temsil et." },
         { no: "04", baslik: "Temsil & İş Birlikleri", to: "/hakkimizda", p: "Uluslararası etkinliklerde Türkiye'yi temsil ediyor, diğer ülke toplulukları ile dostluk maçları düzenliyoruz." },
       ],
@@ -310,7 +310,7 @@ export const METIN = {
       neH2: "GeoGuessrTürkiye in four headlines",
       neler: [
         { no: "01", baslik: "Tournaments & Leagues", to: "/etkinlikler", p: "From one-night cups to a full league: events where players of every level can compete." },
-        { no: "02", baslik: "Guides & Meta", to: "/etkinlikler", p: "Country recognition, plates and driving-side clues, camera generations, bollards… We fill the gap in Turkish resources." },
+        { no: "02", baslik: "Guides & Meta", to: "/faydali-siteler", p: "Country recognition, plates and driving-side clues, camera generations, bollards… We fill the gap in Turkish resources." },
         { no: "03", baslik: "Clubs", to: "/kulupler", p: "Our official clubs on GeoGuessr: join, wear the badge and represent Türkiye in club competitions." },
         { no: "04", baslik: "Representation & Collabs", to: "/hakkimizda", p: "We represent Türkiye in international events and host friendlies with other countries' communities." },
       ],

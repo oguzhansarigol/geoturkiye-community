@@ -22,9 +22,9 @@ export default function FaydaliSiteler() {
         <span className="page-coords">{s.siteler.length} {s.koordinatSon}</span>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ paddingTop: "clamp(28px, 5vh, 48px)" }}>
         <div className="container">
-          <div className="numrows">
+          <div className="numrows" style={{ borderTop: "none" }}>
             {s.siteler.map((x, i) => (
               <Reveal key={x.no} delay={i * 0.04}>
                 <a className="numrow" href={x.url} target="_blank" rel="noopener">

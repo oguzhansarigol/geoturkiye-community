@@ -313,7 +313,7 @@ p { text-wrap: pretty; }
 .pin:hover .pin-ring { opacity: 1 !important; }
 .pin:hover .pin-dot { fill: var(--red-deep); }
 
-/* ---------- Canlı harita (Leaflet) ---------- */
+/* ---------- Canlı harita (Google Maps yerleşimi) ---------- */
 .map-hold { position: relative; }
 .map-live {
   position: absolute; top: 14px; left: 14px; z-index: 5;
@@ -332,8 +332,10 @@ p { text-wrap: pretty; }
   border-radius: var(--radius);
   background: #fff;
   position: relative; z-index: 0; isolation: isolate;
+  overflow: hidden;
 }
-.livemap .leaflet-tile { filter: saturate(0.95); }
+.livemap,
+.livemap .leaflet-grab { cursor: crosshair; }
 .livemap .leaflet-tooltip {
   font-family: var(--font-mono); font-size: 11.5px; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
@@ -341,15 +343,11 @@ p { text-wrap: pretty; }
   border: 1px solid var(--line); border-radius: var(--radius);
   box-shadow: none; padding: 5px 9px;
 }
-.livemap .leaflet-control-attribution {
-  font-size: 10px; background: rgba(255,255,255,.8);
-}
+.livemap .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.8); }
 .livemap .leaflet-control-zoom a { color: var(--ink); }
 
 /* Şehir pinleri hafifçe nefes alır */
-.city-pin {
-  animation: cityGlow 2.8s ease-in-out infinite;
-}
+.city-pin { animation: cityGlow 2.8s ease-in-out infinite; }
 @keyframes cityGlow {
   0%, 100% { fill-opacity: 1; }
   50% { fill-opacity: .55; }
@@ -363,6 +361,25 @@ p { text-wrap: pretty; }
   65%  { opacity: .85; }
   100% { opacity: 0; }
 }
+
+/* Tıklayınca fırlayan altın 5K! rozeti (tam puan) */
+.fivek-wrap { background: none; border: none; }
+.fivek {
+  position: absolute; left: 0; top: 0;
+  transform: translate(-50%, -130%);
+  height: 26px; width: auto; max-width: none;
+  filter: drop-shadow(0 1px 2px rgba(26, 22, 17, .35));
+  pointer-events: none;
+  animation: fivekPop 1.5s ease-out forwards;
+}
+@keyframes fivekPop {
+  0%   { opacity: 0; transform: translate(-50%, -60%) scale(.5); }
+  16%  { opacity: 1; transform: translate(-50%, -140%) scale(1.18); }
+  28%  { transform: translate(-50%, -130%) scale(1); }
+  70%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -210%) scale(1); }
+}
+
 .live-wrap { display: inline-flex; align-items: center; gap: 9px; }
 .live-dot {
   width: 8px; height: 8px; border-radius: 50%;
@@ -633,7 +650,7 @@ p { text-wrap: pretty; }
   position: relative;
   background: url("/topo.svg") no-repeat right -400px top -500px / 1160px auto;
 }
-.page-hero h1 { font-size: clamp(40px, 6.2vw, 76px); font-weight: 700; margin-top: 22px; }
+.page-hero h1 { font-size: clamp(32px, 4.4vw, 52px); font-weight: 700; margin-top: 18px; }
 .page-hero .lead { margin-top: 20px; font-size: 18px; color: var(--ink-2); max-width: 62ch; }
 .page-hero .page-coords {
   position: absolute; right: var(--gutter); bottom: 18px;
@@ -827,13 +844,10 @@ p { text-wrap: pretty; }
 /* Faydalı siteler listesi */
 .site-head { display: flex; align-items: flex-start; gap: 14px; }
 .site-ico {
-  width: 34px; height: 34px; flex: none;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: #fff;
+  width: 32px; height: 32px; flex: none;
+  border-radius: 6px;
   object-fit: contain;
-  padding: 3px;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 .site-url {
   font-family: var(--font-mono); font-size: 12px;
@@ -951,8 +965,8 @@ p { text-wrap: pretty; }
   html { scroll-behavior: auto; }
   .ticker-track { animation: none; }
   .live-dot { animation: none; }
-  .guess-dot { animation: none; opacity: .8; }
   .city-pin { animation: none; }
+  .guess-dot { animation: none; opacity: .8; }
   .topo-live path.flow,
   .topo-live .hillA,
   .topo-live .hillB { animation: none; }

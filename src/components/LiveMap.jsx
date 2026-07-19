@@ -4,10 +4,10 @@ import "leaflet/dist/leaflet.css";
 import { rastgeleNokta } from "../data/turkiye-sinir.js";
 
 // ============================================================
-// Beyaz tonlu canlı harita (CARTO Light altlığı, API anahtarı gerekmez).
-// Google Maps'in açık temasına çok yakın görünür. İleride gerçek
-// Google Maps'e geçmek isterseniz: Google Cloud'dan API anahtarı alıp
-// Maps JavaScript API + özel stil ile bu bileşen değiştirilebilir.
+// Canlı harita: CARTO Voyager altlığı (Google Maps görünümüne en
+// yakın anahtarsız altlık). Şehir pinleri, Türkiye sınırları içinde
+// yanıp sönen "canlı tahmin" noktaları ve tıklayınca beliren "5K"
+// (GeoGuessr'da tam puan) animasyonu.
 // ============================================================
 
 const SEHIRLER = [
@@ -48,12 +48,10 @@ export default function LiveMap() {
       { padding: [16, 16] }
     );
 
-    // Voyager altlığı: açık tema ama yollar ve yerleşimler net görünür
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd",
-      maxZoom: 20,
+    // Esri World Topo: yeşil bitki örtüsü ve yumuşak kabartmalı, temiz altlık
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+      attribution: 'Tiles © <a href="https://www.esri.com">Esri</a>',
+      maxZoom: 19,
     }).addTo(map);
 
     SEHIRLER.forEach((s) => {
@@ -69,8 +67,7 @@ export default function LiveMap() {
         .bindTooltip(s.ad, { direction: "top", offset: [0, -8] });
     });
 
-    // "Canlı tahminler": Türkiye sınırları içinde rastgele noktalarda
-    // yanıp sönen kırmızı işaretler
+    // "Canlı tahminler": rastgele noktalarda yanıp sönen kırmızı işaretler
     const azHareket = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let sayac;
     if (!azHareket) {
@@ -91,8 +88,30 @@ export default function LiveMap() {
       }, 300);
     }
 
+    // Tıklanan yere sarı nokta + GeoGuessr'ın altın "5K!" rozeti
+    const tikla = (e) => {
+      const nokta = L.circleMarker(e.latlng, {
+        radius: 5,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: "#FFB900",
+        fillOpacity: 1,
+        interactive: false,
+      }).addTo(map);
+      const rozet = L.marker(e.latlng, {
+        icon: L.divIcon({ className: "fivek-wrap", html: '<img class="fivek" src="/5k.png" alt="5K">', iconSize: [0, 0] }),
+        interactive: false,
+      }).addTo(map);
+      setTimeout(() => {
+        map.removeLayer(nokta);
+        map.removeLayer(rozet);
+      }, 1500);
+    };
+    map.on("click", tikla);
+
     return () => {
       if (sayac) clearInterval(sayac);
+      map.off("click", tikla);
       map.remove();
     };
   }, []);
