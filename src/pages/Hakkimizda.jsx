@@ -58,6 +58,14 @@ function InstagramIkon() {
   );
 }
 
+function KickIkon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z" />
+    </svg>
+  );
+}
+
 // Gönüllü yöneticiler kartındaki anonim kişi silüeti
 function Siluet() {
   return (
@@ -199,6 +207,9 @@ export default function Hakkimizda() {
                     )}
                     {k.instagram && (
                       <a href={k.instagram} target="_blank" rel="noopener" aria-label={`${k.ad} Instagram`}><InstagramIkon /></a>
+                    )}
+                    {k.kick && (
+                      <a href={k.kick} target="_blank" rel="noopener" aria-label={`${k.ad} Kick`}><KickIkon /></a>
                     )}
                   </div>
                 </article>
