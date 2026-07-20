@@ -1206,3 +1206,7 @@ p { text-wrap: pretty; }
 /* İkon buton (filtre / sırala) */
 .ikon-btn { display: inline-flex; align-items: center; padding: 7px 9px; }
 .ikon-btn svg { display: block; }
+
+/* Kilometre taşı fotoğrafları daireyi doldurur */
+.yh-daire { overflow: hidden; }
+.yh-daire img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
