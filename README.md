@@ -1,102 +1,82 @@
 # GeoGuessrTürkiye
 
-GeoGuessr Türkiye Topluluğu'nun resmi web sitesi. Turnuvalar, kulüpler,
+Türkiye'nin GeoGuessr topluluğunun resmî web sitesi. Turnuvalar, kulüpler,
 rehberler ve topluluk duyuruları için tek adres.
 
-- Site: https://geoturkiye.community
-- Discord: https://discord.gg/JqxyV9PxdV
+- **Site:** https://geoturkiye.community
+- **Discord:** https://discord.gg/JqxyV9PxdV
 
-Bağımsız bir topluluk projesidir; GeoGuessr AB ile resmi bir bağı yoktur.
+> GeoGuessrTürkiye bağımsız bir topluluk oluşumudur; GeoGuessr AB ile
+> resmî bir bağı yoktur.
 
-## Özellikler
+## Bu site nedir?
 
-- Türkçe ve İngilizce tam çeviri, sağ üstten anlık dil değişimi
-- Canlı harita: Google Maps görünümüne yakın CARTO Voyager altlığı,
-  şehir pinleri, Türkiye sınırları içinde beliren canlı tahmin noktaları
-  ve haritaya tıklayınca fırlayan 5K animasyonu (API anahtarı gerektirmez)
-- Sayfa geçişleri ve kaydırma animasyonları (Motion)
-- Kartografik tasarım dili: topografya desenleri, koordinat etiketleri,
-  Google Sans Flex ve Google Sans Code
-- SEO: sayfa bazlı başlık ve açıklamalar, Open Graph, JSON-LD,
-  robots.txt, sitemap.xml
-- Güvenlik başlıkları: CSP, HSTS, X-Frame-Options ve diğerleri
-  (public/_headers)
-- Kısık seviyede arayüz tık sesleri (Web Audio, ses dosyası yok)
+GeoGuessrTürkiye, GeoGuessr oynayan Türkçe konuşan oyuncuları bir araya
+getiren bir topluluktur. Bu site topluluğun vitrinidir ve şunları sağlar:
 
-## Teknolojiler
+- **Etkinlikler ve turnuvalar:** Aktif turnuvalar sitede listelenir;
+  oyuncular üyelik gerekmeden Discord kullanıcı adı ve GeoGuessr
+  profiliyle başvuru yapar. Sonuçlar ve duyurular Discord üzerinden paylaşılır.
+- **Kulüpler:** GeoGuessr üzerindeki resmî topluluk kulüpleri tek sayfada;
+  kontenjan dolduğunda sıraya girmek için site üzerinden başvuru bırakılır.
+- **Katılım rehberi:** Topluluğa katılma adımları, kurallar ve sık
+  sorulan sorular.
+- **Faydalı kaynaklar:** Meta öğrenmekten harita yapmaya, topluluğun
+  güvendiği araçların derli toplu listesi.
+- **Yönetim paneli:** Turnuva oluşturma ve başvuru değerlendirme,
+  yalnızca yetkili yöneticilerin girebildiği bir panelden yürütülür.
+  Başvurulardaki oyuncu profilleri lig ve düello istatistikleriyle
+  zenginleştirilir.
 
-Vite, React 19, React Router 7, Motion (Framer Motion), Leaflet.
+Site Türkçe ve İngilizce olarak tam çeviriyle sunulur; dil sağ üstten
+anlık değiştirilebilir.
 
-## Kurulum
+## Nasıl çalışır?
 
-Node.js 20 veya üzeri gerekir.
+Site, Vercel üzerinde barınan bir React (Vite) uygulamasıdır. Başvuru
+sistemi Supabase (Postgres) kullanır; GeoGuessr profil bilgileri küçük
+bir sunucu fonksiyonu üzerinden, halka açık verilerden okunur.
+
+Veri güvenliği veritabanı katmanında, satır bazlı güvenlik (RLS)
+kurallarıyla sağlanır:
+
+- Ziyaretçiler yalnızca yayınlanmış turnuvaları görebilir ve açık
+  turnuvalara başvuru ekleyebilir.
+- Başvuruların içeriğini yalnızca giriş yapmış yöneticiler görebilir ve
+  değerlendirebilir. Siteden yönetici hesabı açılamaz.
+- Mükerrer başvurular ve kontenjan aşımı sunucu tarafında engellenir.
+
+Bu depo açık kaynaktır ve içinde gizli bilgi bulunmaz: veritabanı şeması
+ve güvenlik kuralları (`supabase/`) bilinçli olarak açıktır, güvenlik bu
+kuralların gizliliğine değil doğruluğuna dayanır. Erişim anahtarları
+depoya girmez; yerelde `.env.local`, üretimde Vercel ortam
+değişkenlerinde tutulur.
+
+## Kendi kopyanı çalıştırmak
+
+Node.js 20+ gerekir.
 
 ```bash
-npm install        # bağımlılıkları kur
-npm run dev        # geliştirme sunucusu: http://localhost:5173
-npm run build      # üretim çıktısını dist/ klasörüne al
-npm run preview    # dist/ çıktısını yerelde dene
+npm install
+cp .env.local.example .env.local   # Supabase anahtarlarını gir
+npm run dev                        # http://localhost:5173
 ```
 
-Yardımcı adres parametreleri:
+Başvuru sistemini uçtan uca çalıştırmak için ücretsiz bir Supabase
+projesi gerekir; adım adım kurulum [KURULUM-SUPABASE.md](KURULUM-SUPABASE.md)
+dosyasında anlatılır. Anahtar girilmezse site sorunsuz çalışır, yalnızca
+başvuru bölümleri gizlenir.
 
-- `?dil=en` veya `?dil=tr`: dili zorla (normalde sağ üstteki TR/EN
-  düğmesi kullanılır, tercih tarayıcıda saklanır)
-- `?noanim`: tüm giriş animasyonlarını atla (tasarım kontrolü için)
-
-## Proje Yapısı
-
-```
-index.html              Giriş HTML'i, font bağlantıları ve meta etiketler
-src/metinler.jsx        Tüm site metinleri (Türkçe + İngilizce)
-src/config.js           Discord daveti, e-posta, sosyal medya bağlantıları
-src/i18n.jsx            Dil durumu ve TR/EN geçişi
-src/ses.js              Arayüz tık sesleri
-src/pages/              Sayfalar: Home, Hakkimizda, Etkinlikler, Kulupler,
-                        FaydaliSiteler, Katil
-src/components/         Header, Footer, LiveMap (canlı harita),
-                        AnimatedTopo, Ticker, Reveal, CtaBand ve diğerleri
-src/styles/global.css   Tasarım sistemi (renk ve font değişkenleri en üstte)
-public/                 Logo, favicon, topografya desenleri, site ikonları,
-                        robots.txt, sitemap.xml, _headers, _redirects
-```
-
-## İçerik Güncelleme
-
-Sitedeki bütün yazılar `src/metinler.jsx` dosyasında durur ve her metnin
-Türkçe (`tr`) ile İngilizce (`en`) karşılığı vardır. Bir metni değiştirirken
-iki bölümü de güncelleyin.
-
-Sık yapılan işlemler:
-
-- Bağlantılar: `src/config.js` (Discord daveti buradan tüm butonlara dağılır)
-- Kulüp kartları: `metinler.jsx` içinde `kulupler.liste`
-- Faydalı siteler: `metinler.jsx` içinde `faydali.siteler`; yeni site
-  eklerken ikonunu `public/ikonlar/<alanadi>.png` olarak koyun
-- Geçmiş turnuvalar: `metinler.jsx` içinde `etkinlikler.gecmis`
-- Haritadaki şehir pinleri: `src/components/LiveMap.jsx` içinde `SEHIRLER`
-
-Yazım kuralı: metinlerde uzun tire (—) kullanılmaz; iki nokta, noktalı
-virgül veya orta nokta (·) tercih edilir.
-
-## Yayınlama
-
-`npm run build` sonrası oluşan `dist/` klasörü herhangi bir statik
-barındırma hizmetine yüklenebilir.
-
-- Netlify ve Cloudflare Pages: `public/_redirects` (SPA yönlendirmesi) ve
-  `public/_headers` (güvenlik başlıkları) otomatik uygulanır.
-- Vercel: SPA yönlendirmesini otomatik yapar; güvenlik başlıklarını
-  `vercel.json` içine taşımanız gerekir.
-- Domain aktif olduğunda `index.html` içindeki canonical ve og:url
-  satırlarının yorumunu kaldırın.
+Sitedeki bütün metinler `src/metinler.jsx` dosyasında, Türkçe ve
+İngilizce karşılıklarıyla birlikte durur; içerik güncellemeleri kod
+bilgisi gerektirmez.
 
 ## Katkı
 
-Hata bildirimi ve katkı için issue veya pull request açabilirsiniz.
-Toplulukla iletişim için Discord sunucumuza bekleriz.
+Hata bildirimi ve öneriler için issue, düzeltmeler için pull request
+açabilirsiniz. Fikir alışverişi için en hızlı kanal Discord sunucumuzdur.
 
 ## Lisans
 
-MIT. Ayrıntılar için LICENSE dosyasına bakın. Logo ve topluluk görselleri
-GeoGuessrTürkiye topluluğuna aittir.
+Kod MIT lisansıyla dağıtılır; ayrıntılar için [LICENSE](LICENSE) dosyasına
+bakın. Logo ve topluluk görselleri GeoGuessrTürkiye topluluğuna aittir.
