@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { rastgeleNokta } from "../data/turkiye-sinir.js";
+import { useTheme } from "../theme.jsx";
 
 // ============================================================
-// Canlı harita: CARTO Voyager altlığı (Google Maps görünümüne en
-// yakın anahtarsız altlık). Şehir pinleri, Türkiye sınırları içinde
-// yanıp sönen "canlı tahmin" noktaları ve tıklayınca beliren "5K"
-// (GeoGuessr'da tam puan) animasyonu.
+// Canlı harita: Esri World Topo (açık) / CARTO Dark Matter (koyu).
+// Şehir pinleri, Türkiye sınırları içinde yanıp sönen "canlı tahmin"
+// noktaları ve tıklayınca beliren "5K" (GeoGuessr'da tam puan) animasyonu.
 // ============================================================
 
 const SEHIRLER = [
@@ -26,8 +26,33 @@ const SEHIRLER = [
   { ad: "Kayseri", lat: 38.73, lon: 35.49 },
 ];
 
+const ACIK_ALTLIK = {
+  url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+  opts: {
+    attribution: 'Tiles © <a href="https://www.esri.com">Esri</a>',
+    maxZoom: 19,
+  },
+};
+
+const KOYU_ALTLIK = {
+  url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  opts: {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: "abcd",
+  },
+};
+
+function altlikSec(tema) {
+  return tema === "dark" ? KOYU_ALTLIK : ACIK_ALTLIK;
+}
+
 export default function LiveMap() {
   const ref = useRef(null);
+  const mapRef = useRef(null);
+  const tileRef = useRef(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const map = L.map(ref.current, {
@@ -48,11 +73,9 @@ export default function LiveMap() {
       { padding: [16, 16] }
     );
 
-    // Esri World Topo: yeşil bitki örtüsü ve yumuşak kabartmalı, temiz altlık
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
-      attribution: 'Tiles © <a href="https://www.esri.com">Esri</a>',
-      maxZoom: 19,
-    }).addTo(map);
+    const baslangic = altlikSec(document.documentElement.dataset.theme || "light");
+    tileRef.current = L.tileLayer(baslangic.url, baslangic.opts).addTo(map);
+    mapRef.current = map;
 
     SEHIRLER.forEach((s) => {
       L.circleMarker([s.lat, s.lon], {
@@ -113,8 +136,18 @@ export default function LiveMap() {
       if (sayac) clearInterval(sayac);
       map.off("click", tikla);
       map.remove();
+      mapRef.current = null;
+      tileRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const secim = altlikSec(theme);
+    if (tileRef.current) map.removeLayer(tileRef.current);
+    tileRef.current = L.tileLayer(secim.url, secim.opts).addTo(map);
+  }, [theme]);
 
   return <div className="livemap" ref={ref} aria-label="Türkiye haritası" />;
 }

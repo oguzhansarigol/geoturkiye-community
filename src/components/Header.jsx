@@ -3,6 +3,7 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { DISCORD_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
+import { useTheme } from "../theme.jsx";
 
 // Marka işareti: ay-yıldızlı konum pini (public/logo.png)
 export function BrandMark() {
@@ -18,43 +19,6 @@ export function DiscordIcon() {
   );
 }
 
-// Tema düğmesi: varsayılan açık; tercih localStorage'da saklanır
-function TemaToggle() {
-  const { t } = useLang();
-  const [koyu, setKoyu] = useState(() => {
-    try { return localStorage.getItem("ggtr-tema") === "koyu"; } catch { return false; }
-  });
-
-  useEffect(() => {
-    document.documentElement.dataset.tema = koyu ? "koyu" : "acik";
-    try { localStorage.setItem("ggtr-tema", koyu ? "koyu" : "acik"); } catch { /* tercih saklanamadı */ }
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", koyu ? "#161310" : "#F5F2EA");
-  }, [koyu]);
-
-  return (
-    <button
-      className="tema-tog"
-      aria-label={t.nav.temaAria}
-      aria-pressed={koyu}
-      onClick={() => setKoyu((v) => !v)}
-    >
-      {koyu ? (
-        /* güneş: açık temaya dön */
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.4" fill="currentColor" stroke="none" />
-          <path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8" />
-        </svg>
-      ) : (
-        /* ay: koyu temaya geç */
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M20.6 14.2A8.7 8.7 0 0 1 9.8 3.4a8.7 8.7 0 1 0 10.8 10.8z" />
-        </svg>
-      )}
-    </button>
-  );
-}
-
 function LangToggle() {
   const { lang, setLang } = useLang();
   return (
@@ -63,6 +27,32 @@ function LangToggle() {
       <span aria-hidden="true">/</span>
       <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const { t } = useLang();
+  const koyu = theme === "dark";
+  return (
+    <button
+      type="button"
+      className="tema-tog"
+      onClick={toggleTheme}
+      aria-label={koyu ? t.nav.temaAcik : t.nav.temaKoyu}
+      title={koyu ? t.nav.temaAcik : t.nav.temaKoyu}
+    >
+      {koyu ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path strokeLinecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z" />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -107,7 +97,7 @@ export default function Header() {
           </nav>
 
           <div className="header-right">
-            <TemaToggle />
+            <ThemeToggle />
             <LangToggle />
             <button
               className="nav-toggle"
