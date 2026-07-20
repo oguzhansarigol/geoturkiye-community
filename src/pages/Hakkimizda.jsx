@@ -175,7 +175,6 @@ export default function Hakkimizda() {
                 <Reveal className={`yh-durak${i % 2 === 1 ? " ters" : ""}`} delay={0.05}>
                   <div className="yh-gorsel">
                     <span className="yh-daire">{YH_IKONLAR[i]}</span>
-                    <span className="yh-etiket">{y.etiket} ·</span>
                   </div>
                   <div className="yh-metin">
                     <span className="yh-tarih">{y.tarih}</span>

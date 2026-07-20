@@ -829,18 +829,6 @@ p { text-wrap: pretty; }
   color: var(--ink); opacity: 0.5; font-size: 14px;
 }
 
-.yh-etiket {
-  position: absolute; z-index: 2;
-  right: -6px; bottom: 10px;
-  writing-mode: vertical-rl; transform: rotate(200deg);
-  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--red);
-}
-.yh-durak.ters .yh-etiket {
-  right: auto; left: -6px; bottom: auto; top: 10px;
-  transform: rotate(160deg); color: var(--ink);
-}
-
 /* Metin */
 .yh-tarih {
   font-family: var(--font-mono); font-size: clamp(24px, 2.6vw, 32px);
