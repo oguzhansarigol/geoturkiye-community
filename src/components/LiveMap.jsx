@@ -24,6 +24,9 @@ const SEHIRLER = [
   { ad: "Diyarbakır", lat: 37.91, lon: 40.24 },
   { ad: "Van", lat: 38.5, lon: 43.38 },
   { ad: "Kayseri", lat: 38.73, lon: 35.49 },
+  { ad: "Zonguldak", lat: 41.45, lon: 31.79 },
+  { ad: "Kahramanmaraş", lat: 37.58, lon: 36.93 },
+  { ad: "Gaziantep", lat: 37.07, lon: 37.38 },
 ];
 
 const ACIK_ALTLIK = {
