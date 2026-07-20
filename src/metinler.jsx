@@ -35,7 +35,7 @@ export const METIN = {
       sevgi: "Türkiye'den sevgilerle",
       mailYok: "Mail adresi henüz hazır değil",
     },
-    varsayilanAciklama: "GeoGuessrTürkiye; turnuvaları, ligleri ve rehberleriyle Türkiye'nin GeoGuessr oyuncularını aynı haritada buluşturan bağımsız topluluktur.",
+    varsayilanAciklama: "GeoGuessr Türkiye; turnuvaları, kulüpleri ve Türkçe rehberleriyle Türkiye'nin GeoGuessr oyuncularını aynı haritada buluşturan bağımsız topluluktur. Katılım açık ve ücretsiz.",
     home: {
       eyebrow: "Türkiye'nin GeoGuessr Topluluğu",
       h1: [
@@ -320,7 +320,7 @@ export const METIN = {
       sevgi: "With love from Türkiye",
       mailYok: "Email address not ready yet",
     },
-    varsayilanAciklama: "GeoGuessrTürkiye is the independent community bringing Türkiye's GeoGuessr players together through tournaments, leagues and guides.",
+    varsayilanAciklama: "GeoGuessr Türkiye is the independent community bringing Türkiye's GeoGuessr players together through tournaments, clubs and Turkish guides. Joining is open and free.",
     home: {
       eyebrow: "Türkiye's GeoGuessr Community",
       h1: [
