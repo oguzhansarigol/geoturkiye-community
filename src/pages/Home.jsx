@@ -116,7 +116,7 @@ export default function Home() {
                 viewport={{ once: true, margin: "0px 0px -40px 0px" }}
                 transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.09 }}
               >
-                <span className="fact-num">{f.say ? <CountUp value={f.n} /> : f.n}</span>
+                <span className="fact-num">{f.say ? <><CountUp value={f.n} />{f.ek}</> : f.n}</span>
                 <span className="fact-label">{f.l}</span>
               </motion.li>
             ))}

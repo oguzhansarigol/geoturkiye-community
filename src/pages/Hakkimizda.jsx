@@ -42,6 +42,32 @@ function Rota({ ters = false }) {
   );
 }
 
+function YouTubeIkon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M23.5 7.2a3.02 3.02 0 0 0-2.12-2.14C19.5 4.55 12 4.55 12 4.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 7.2 31.6 31.6 0 0 0 0 12c0 1.62.17 3.23.5 4.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14c.33-1.57.5-3.18.5-4.8s-.17-3.23-.5-4.8zM9.6 15.3V8.7l6.27 3.3-6.27 3.3z" />
+    </svg>
+  );
+}
+
+function InstagramIkon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.72 3.72 0 0 1-1.38-.9 3.72 3.72 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2m0-2.2C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.13 1.38A5.9 5.9 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.13a5.9 5.9 0 0 0 2.13 1.38c.76.3 1.64.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.13-1.38 5.9 5.9 0 0 0 1.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.38-2.13A5.9 5.9 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.15A3.99 3.99 0 1 1 16 12a3.99 3.99 0 0 1-4 3.99zm7.85-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z" />
+    </svg>
+  );
+}
+
+// Gönüllü yöneticiler kartındaki anonim kişi silüeti
+function Siluet() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7v1H4z" />
+    </svg>
+  );
+}
+
 // Kilometre taşları: duraklar arasındaki kıvrımlı kesikli rota parçası
 function YolKivrim({ ters }) {
   return (
@@ -152,15 +178,44 @@ export default function Hakkimizda() {
             <h2>{s.ekipH2}</h2>
             <p className="lead">{s.ekipLead}</p>
           </Reveal>
-          <Reveal>
-            <div className="role-grid">
-              {s.ekip.map((e) => (
-                <article className="role-cell" key={e.ic}>
-                  <span className="r-ic">{e.ic}</span>
-                  <h3>{e.ad}</h3>
-                  <p>{e.p}</p>
+          <Reveal delay={0.08}>
+            <div className="kisi-grid">
+              {s.ekipKisiler.map((k) => (
+                <article className="kisi-cell" key={k.ad}>
+                  <div className="kisi-gorsel">
+                    {k.img ? (
+                      <img className="kisi-foto" src={k.img} alt={k.ad} loading="lazy" width="480" height="480" />
+                    ) : (
+                      <span className="kisi-bas" aria-hidden="true">
+                        {k.ad.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                      </span>
+                    )}
+                  </div>
+                  <h3>{k.ad}</h3>
+                  <span className="kisi-rol">{k.rol}</span>
+                  <div className="kisi-sosyal">
+                    {k.youtube && (
+                      <a href={k.youtube} target="_blank" rel="noopener" aria-label={`${k.ad} YouTube`}><YouTubeIkon /></a>
+                    )}
+                    {k.instagram && (
+                      <a href={k.instagram} target="_blank" rel="noopener" aria-label={`${k.ad} Instagram`}><InstagramIkon /></a>
+                    )}
+                  </div>
                 </article>
               ))}
+              <article className="kisi-cell">
+                <div className="kisi-gorsel">
+                  <div className="kisi-yigin" aria-hidden="true">
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka arti">+</span>
+                  </div>
+                </div>
+                <h3>{s.ekipCokluBaslik}</h3>
+                <p>{s.ekipCokluP}</p>
+              </article>
             </div>
           </Reveal>
         </div>
