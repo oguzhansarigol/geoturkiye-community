@@ -133,7 +133,7 @@ export const METIN = {
       ekipKisiler: [
         { ad: "Oğuzhan Sarıgöl", rol: "Moderatör", img: "/ekip/oguzhansarigol.png", youtube: "https://www.youtube.com/@oguzhansarigol", instagram: "https://www.instagram.com/oguzhansarigol_" },
         { ad: "Ahmet Yusuf Kartal", rol: "Moderatör", img: "/ekip/ahmetyusufkartal.png", youtube: "https://www.youtube.com/@ayusufkartal", instagram: "https://www.instagram.com/a.yusufkartal" },
-        { ad: "Fez", rol: "Moderatör", img: "/ekip/fez.png", kick: "https://kick.com/butfezz" },
+        { ad: "Fez", rol: "Moderatör", img: "/ekip/fez.png", youtube: "https://www.youtube.com/@regularcinemapod", kick: "https://kick.com/butfezz" },
       ],
       ekipCokluBaslik: "Gönüllü Yöneticiler",
       ekipCokluP: "Ve daha birçok gönüllü yönetici; sunucuyu her gün birlikte ayakta tutuyorlar.",
@@ -419,7 +419,7 @@ export const METIN = {
       ekipKisiler: [
         { ad: "Oğuzhan Sarıgöl", rol: "Moderator", img: "/ekip/oguzhansarigol.png", youtube: "https://www.youtube.com/@oguzhansarigol", instagram: "https://www.instagram.com/oguzhansarigol_" },
         { ad: "Ahmet Yusuf Kartal", rol: "Moderator", img: "/ekip/ahmetyusufkartal.png", youtube: "https://www.youtube.com/@ayusufkartal", instagram: "https://www.instagram.com/a.yusufkartal" },
-        { ad: "Fez", rol: "Moderator", img: "/ekip/fez.png", kick: "https://kick.com/butfezz" },
+        { ad: "Fez", rol: "Moderator", img: "/ekip/fez.png", youtube: "https://www.youtube.com/@regularcinemapod", kick: "https://kick.com/butfezz" },
       ],
       ekipCokluBaslik: "Volunteer Staff",
       ekipCokluP: "And many more volunteers keep the server running together, every single day.",
