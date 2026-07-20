@@ -46,11 +46,7 @@ kurallarıyla sağlanır:
   değerlendirebilir. Siteden yönetici hesabı açılamaz.
 - Mükerrer başvurular ve kontenjan aşımı sunucu tarafında engellenir.
 
-Bu depo açık kaynaktır ve içinde gizli bilgi bulunmaz: veritabanı şeması
-ve güvenlik kuralları (`supabase/`) bilinçli olarak açıktır, güvenlik bu
-kuralların gizliliğine değil doğruluğuna dayanır. Erişim anahtarları
-depoya girmez; yerelde `.env.local`, üretimde Vercel ortam
-değişkenlerinde tutulur.
+
 
 ## Kendi kopyanı çalıştırmak
 
