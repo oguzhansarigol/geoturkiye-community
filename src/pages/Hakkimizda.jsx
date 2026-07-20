@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { motion } from "motion/react";
 import Page from "../components/Page.jsx";
 import Reveal from "../components/Reveal.jsx";
@@ -40,6 +41,64 @@ function Rota({ ters = false }) {
     </svg>
   );
 }
+
+// Kilometre taşları: duraklar arasındaki kıvrımlı kesikli rota parçası
+function YolKivrim({ ters }) {
+  return (
+    <svg className="yh-kivrim" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        d={ters ? "M240 2 C 240 58, 60 42, 60 98" : "M60 2 C 60 58, 240 42, 240 98"}
+        fill="none" stroke="currentColor" strokeWidth="2.5"
+        strokeDasharray="7 8" strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// Durak çizimleri (şimdilik yer tutucu; ileride fotoğrafla değişebilir)
+const YH_IKONLAR = [
+  // 01 — Kuruluş: konuşma balonları + pin
+  <svg viewBox="0 0 96 96" key="k">
+    <g fill="none" stroke="var(--ink)" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M18 26h38a6 6 0 0 1 6 6v16a6 6 0 0 1-6 6H36l-10 9v-9h-8a6 6 0 0 1-6-6V32a6 6 0 0 1 6-6Z" />
+      <path d="M70 42h8a6 6 0 0 1 6 6v12a6 6 0 0 1-6 6h-4v8l-9-8h-9" />
+    </g>
+    <circle cx="30" cy="40" r="3.2" fill="var(--red)" />
+    <circle cx="40" cy="40" r="3.2" fill="var(--red)" />
+    <circle cx="50" cy="40" r="3.2" fill="var(--red)" />
+  </svg>,
+  // 02 — Turnuvalar: kupa
+  <svg viewBox="0 0 96 96" key="t">
+    <g fill="none" stroke="var(--ink)" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M34 20h28v14a14 14 0 0 1-28 0Z" />
+      <path d="M34 24h-9a2 2 0 0 0-2 2c0 8 4 13 11 14M62 24h9a2 2 0 0 1 2 2c0 8-4 13-11 14" />
+      <path d="M48 48v10M40 66h16M36 76h24" />
+    </g>
+    <path d="m48 26 2.3 4.7 5.2.7-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.6 5.2-.7Z" fill="var(--red)" />
+  </svg>,
+  // 03 — Büyüme: katlanmış harita + rota
+  <svg viewBox="0 0 96 96" key="h">
+    <g fill="none" stroke="var(--ink)" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M16 28 38 20l20 8 22-8v48l-22 8-20-8-22 8Z" />
+      <path d="M38 20v48M58 28v48" />
+    </g>
+    <path d="M24 56c8-10 16 2 24-8s14-2 22-10" fill="none" stroke="var(--red)" strokeWidth="3" strokeDasharray="5 5" strokeLinecap="round" />
+    <circle cx="24" cy="56" r="3.4" fill="var(--red)" />
+    <circle cx="70" cy="38" r="3.4" fill="var(--red)" />
+  </svg>,
+  // 04 — Yayında: tarayıcı penceresi + pin
+  <svg viewBox="0 0 96 96" key="w">
+    <g fill="none" stroke="var(--ink)" strokeWidth="3.4" strokeLinejoin="round" strokeLinecap="round">
+      <rect x="14" y="20" width="68" height="56" rx="6" />
+      <path d="M14 34h68" />
+    </g>
+    <circle cx="24" cy="27" r="2.6" fill="var(--red)" />
+    <circle cx="33" cy="27" r="2.6" fill="var(--ink)" opacity=".55" />
+    <circle cx="42" cy="27" r="2.6" fill="var(--ink)" opacity=".3" />
+    <path d="M48 42c8 0 14 6 14 13 0 9-14 19-14 19S34 64 34 55c0-7 6-13 14-13Z" fill="none" stroke="var(--red)" strokeWidth="3.4" strokeLinejoin="round" />
+    <circle cx="48" cy="55" r="4" fill="var(--red)" />
+  </svg>,
+];
 
 export default function Hakkimizda() {
   const { t } = useLang();
@@ -103,19 +162,28 @@ export default function Hakkimizda() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container twocol">
+      <section className="section" style={{ paddingTop: 48 }}>
+        <div className="container twocol twocol-ortali">
           <Reveal className="sticky-side">
             <p className="eyebrow">{s.yolEyebrow}</p>
             <h2 className="side-h2">{s.yolH2}</h2>
           </Reveal>
-          <div className="timeline">
+          <div className="yol-serit">
             {s.yolculuk.map((y, i) => (
-              <Reveal className="tl-item" key={y.ad} delay={i * 0.06}>
-                <span className="tl-date">{y.tarih}</span>
-                <h3>{y.ad}</h3>
-                <p>{y.p}</p>
-              </Reveal>
+              <Fragment key={y.ad}>
+                {i > 0 && <YolKivrim ters={i % 2 === 1} />}
+                <Reveal className={`yh-durak${i % 2 === 1 ? " ters" : ""}`} delay={0.05}>
+                  <div className="yh-gorsel">
+                    <span className="yh-daire">{YH_IKONLAR[i]}</span>
+                    <span className="yh-etiket">{y.etiket} ·</span>
+                  </div>
+                  <div className="yh-metin">
+                    <span className="yh-tarih">{y.tarih}</span>
+                    <h3>{y.ad}</h3>
+                    <p>{y.p}</p>
+                  </div>
+                </Reveal>
+              </Fragment>
             ))}
           </div>
         </div>

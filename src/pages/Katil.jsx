@@ -20,7 +20,7 @@ export default function Katil() {
         <span className="page-coords">{s.koordinat}</span>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ paddingTop: 28 }}>
         <div className="container">
           <Reveal className="section-head">
             <p className="eyebrow">{s.adimEyebrow}</p>

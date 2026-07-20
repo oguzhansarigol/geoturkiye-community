@@ -766,20 +766,111 @@ p { text-wrap: pretty; }
 }
 
 /* ---------- Zaman çizelgesi ---------- */
-.timeline { border-left: 2px solid var(--ink); margin-left: 6px; }
-.tl-item { position: relative; padding: 0 0 clamp(28px, 4vh, 44px) clamp(24px, 3.5vw, 44px); }
-.tl-item:last-child { padding-bottom: 6px; }
-.tl-item::before {
-  content: ""; position: absolute; left: -7px; top: 7px;
-  width: 12px; height: 12px; background: var(--paper);
-  border: 3px solid var(--red); border-radius: 50%;
+/* ---------- Kilometre taşları: kıvrımlı rota ---------- */
+.twocol-ortali { align-items: center; }
+
+.yol-serit { display: flex; flex-direction: column; }
+
+.yh-kivrim {
+  width: min(100%, 560px); height: clamp(64px, 9vh, 96px);
+  color: var(--red); opacity: 0.85; display: block;
 }
-.tl-item .tl-date {
-  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--red);
+
+.yh-durak {
+  display: grid; grid-template-columns: 215px 1fr;
+  gap: clamp(18px, 3vw, 34px); align-items: center;
+  width: min(100%, 560px);
 }
-.tl-item h3 { font-size: 22px; margin-top: 8px; }
-.tl-item p { margin-top: 8px; color: var(--ink-2); font-size: 15.5px; max-width: 58ch; }
+.yh-durak.ters { grid-template-columns: 1fr 215px; }
+.yh-durak.ters .yh-gorsel { order: 2; }
+.yh-durak.ters .yh-metin { order: 1; text-align: right; }
+.yh-durak.ters .yh-metin p { margin-left: auto; }
+
+/* Görsel: ışın patlamalı daire + yana yatık etiket */
+.yh-gorsel { position: relative; width: 215px; display: grid; place-items: center; }
+.yh-daire {
+  position: relative; z-index: 1;
+  width: 158px; height: 158px; border-radius: 50%;
+  background: #fff; border: 1px solid var(--line);
+  display: grid; place-items: center;
+  box-shadow: 0 14px 30px rgba(26, 22, 17, 0.09);
+  transition: transform 0.3s ease;
+}
+.yh-daire svg { width: 92px; height: 92px; }
+.yh-durak:hover .yh-daire { transform: scale(1.05) rotate(-2deg); }
+
+/* Işın halkası (görseldeki turuncu patlama benzeri, site kırmızısıyla) */
+.yh-gorsel::before {
+  content: ""; position: absolute; z-index: 0;
+  width: 205px; height: 205px; border-radius: 50%;
+  background: repeating-conic-gradient(
+    color-mix(in srgb, var(--red) 60%, transparent) 0deg 2.6deg,
+    transparent 2.6deg 10deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 47%, #000 48%, #000 68%, transparent 69%);
+  mask: radial-gradient(circle, transparent 47%, #000 48%, #000 68%, transparent 69%);
+  transition: transform 0.5s ease;
+}
+.yh-durak.ters .yh-gorsel::before {
+  background: repeating-conic-gradient(
+    color-mix(in srgb, var(--ink) 42%, transparent) 0deg 2.6deg,
+    transparent 2.6deg 10deg
+  );
+}
+.yh-durak:hover .yh-gorsel::before { transform: rotate(14deg); }
+
+/* Süs: köşelerde küçük kıvılcımlar */
+.yh-gorsel::after {
+  content: "✦"; position: absolute; top: -4px; right: 8px;
+  color: var(--red); font-size: 17px; opacity: 0.9;
+}
+.yh-durak.ters .yh-gorsel::after {
+  content: "✚"; right: auto; left: 8px; top: 0;
+  color: var(--ink); opacity: 0.5; font-size: 14px;
+}
+
+.yh-etiket {
+  position: absolute; z-index: 2;
+  right: -6px; bottom: 10px;
+  writing-mode: vertical-rl; transform: rotate(200deg);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--red);
+}
+.yh-durak.ters .yh-etiket {
+  right: auto; left: -6px; bottom: auto; top: 10px;
+  transform: rotate(160deg); color: var(--ink);
+}
+
+/* Metin */
+.yh-tarih {
+  font-family: var(--font-mono); font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 700; letter-spacing: 0.02em; color: var(--ink);
+}
+.yh-metin h3 { font-size: 20px; margin-top: 6px; }
+.yh-metin h3::after {
+  content: ""; display: block; width: 44px; height: 3px;
+  background: var(--red); margin-top: 10px;
+}
+.yh-durak.ters .yh-metin h3::after { margin-left: auto; }
+.yh-metin p { margin-top: 10px; color: var(--ink-2); font-size: 15px; max-width: 34ch; }
+
+@media (max-width: 640px) {
+  .yh-durak, .yh-durak.ters { grid-template-columns: 150px 1fr; }
+  .yh-durak.ters .yh-gorsel { order: 1; }
+  .yh-durak.ters .yh-metin { order: 2; text-align: left; }
+  .yh-durak.ters .yh-metin p { margin-left: 0; }
+  .yh-durak.ters .yh-metin h3::after { margin-left: 0; }
+  .yh-gorsel { width: 150px; }
+  .yh-daire { width: 118px; height: 118px; }
+  .yh-daire svg { width: 68px; height: 68px; }
+  .yh-gorsel::before { width: 150px; height: 150px; }
+  .yh-kivrim { display: none; }
+  .yh-durak { margin-bottom: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yh-durak:hover .yh-daire, .yh-durak:hover .yh-gorsel::before { transform: none; }
+}
 
 /* ---------- Adımlar ---------- */
 .steps { counter-reset: step; display: grid; border-top: 1px solid var(--line); }
