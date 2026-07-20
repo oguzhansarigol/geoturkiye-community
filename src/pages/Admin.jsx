@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Page from "../components/Page.jsx";
 import Btn from "../components/Btn.jsx";
+import BasvuruTablosu from "../components/BasvuruTablosu.jsx";
 import { supabase } from "../supabase.js";
 
 // ============================================================
@@ -10,7 +11,6 @@ import { supabase } from "../supabase.js";
 // ============================================================
 
 const DURUM_ETIKET = { taslak: "Taslak", acik: "Açık", kapali: "Kapalı" };
-const BASVURU_ETIKET = { bekliyor: "Bekliyor", onaylandi: "Onaylandı", reddedildi: "Reddedildi" };
 
 const BOS_TURNUVA = { ad: "", aciklama: "", format: "", tarih: "", max_katilimci: "", durum: "taslak" };
 
@@ -146,47 +146,49 @@ function Basvurular({ turnuva }) {
   if (!liste) return <p className="t-day">Başvurular yükleniyor…</p>;
   if (liste.length === 0) return <p className="t-day">Bu turnuvaya henüz başvuru yok.</p>;
 
+  return <BasvuruTablosu satirlar={liste} onDurumDegistir={durumDegistir} onSil={sil} />;
+}
+
+// Tüm kulüp başvuruları tek listede
+function KulupBasvurulari() {
+  const [liste, setListe] = useState(null);
+
+  async function yukle() {
+    const { data } = await supabase
+      .from("kulup_basvurulari")
+      .select("*")
+      .order("created_at", { ascending: true });
+    setListe(data || []);
+  }
+
+  useEffect(() => { yukle(); }, []);
+
+  async function durumDegistir(id, durum) {
+    await supabase.from("kulup_basvurulari").update({ durum }).eq("id", id);
+    yukle();
+  }
+
+  async function sil(id) {
+    if (!window.confirm("Bu başvuru silinsin mi?")) return;
+    await supabase.from("kulup_basvurulari").delete().eq("id", id);
+    yukle();
+  }
+
+  if (!liste) return <p className="t-day">Başvurular yükleniyor…</p>;
+  if (liste.length === 0) return <p className="t-day">Henüz kulüp başvurusu yok.</p>;
+
   return (
-    <div className="table-scroll">
-      <table className="fixture admin-tablo">
-        <thead>
-          <tr>
-            <th>Discord</th><th>Oyun profili</th><th>Ad Soyad</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
-          </tr>
-        </thead>
-        <tbody>
-          {liste.map((b) => (
-            <tr key={b.id}>
-              <td><div className="t-name">{b.discord_kullanici}</div></td>
-              <td>
-                <a className="admin-link" href={b.oyun_profili} target="_blank" rel="noopener">
-                  {b.oyun_profili.replace(/^https?:\/\//, "").slice(0, 40)}
-                </a>
-              </td>
-              <td>{b.ad_soyad || "—"}</td>
-              <td className="t-day">{new Date(b.created_at).toLocaleDateString("tr-TR")}</td>
-              <td><span className={`tag basvuru-${b.durum}`}>{BASVURU_ETIKET[b.durum]}</span></td>
-              <td className="admin-islemler">
-                {b.durum !== "onaylandi" && (
-                  <button className="admin-mini onay" onClick={() => durumDegistir(b.id, "onaylandi")}>Onayla</button>
-                )}
-                {b.durum !== "reddedildi" && (
-                  <button className="admin-mini red" onClick={() => durumDegistir(b.id, "reddedildi")}>Reddet</button>
-                )}
-                {b.durum !== "bekliyor" && (
-                  <button className="admin-mini" onClick={() => durumDegistir(b.id, "bekliyor")}>Beklet</button>
-                )}
-                <button className="admin-mini" onClick={() => sil(b.id)}>Sil</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <BasvuruTablosu
+      satirlar={liste}
+      ekKolon={{ baslik: "Kulüp", deger: (b) => b.kulup }}
+      onDurumDegistir={durumDegistir}
+      onSil={sil}
+    />
   );
 }
 
 function Panel({ onCikis }) {
+  const [sekme, setSekme] = useState("turnuvalar"); // turnuvalar | kulup
   const [turnuvalar, setTurnuvalar] = useState(null);
   const [duzenlenen, setDuzenlenen] = useState(null); // null | "yeni" | turnuva kaydı
   const [acikBasvuru, setAcikBasvuru] = useState(null); // başvuruları gösterilen turnuva id
@@ -210,15 +212,32 @@ function Panel({ onCikis }) {
   return (
     <div className="admin-panel">
       <div className="admin-ust">
-        <h2>Turnuva Yönetimi</h2>
+        <div className="admin-sekmeler">
+          <button
+            className={`admin-sekme${sekme === "turnuvalar" ? " aktif" : ""}`}
+            onClick={() => setSekme("turnuvalar")}
+          >
+            Turnuvalar
+          </button>
+          <button
+            className={`admin-sekme${sekme === "kulup" ? " aktif" : ""}`}
+            onClick={() => setSekme("kulup")}
+          >
+            Kulüp Başvuruları
+          </button>
+        </div>
         <div className="admin-satir">
-          {duzenlenen === null && (
+          {sekme === "turnuvalar" && duzenlenen === null && (
             <Btn kind="red" onClick={() => setDuzenlenen("yeni")}>+ Yeni Turnuva</Btn>
           )}
           <Btn kind="ghost" onClick={onCikis}>Çıkış</Btn>
         </div>
       </div>
 
+      {sekme === "kulup" && <KulupBasvurulari />}
+
+      {sekme === "turnuvalar" && (
+      <>
       {duzenlenen === "yeni" && (
         <TurnuvaFormu onKaydet={() => { setDuzenlenen(null); yukle(); }} onIptal={() => setDuzenlenen(null)} />
       )}
@@ -262,6 +281,8 @@ function Panel({ onCikis }) {
             {acikBasvuru === t.id && <Basvurular turnuva={t} />}
           </div>
         )
+      )}
+      </>
       )}
     </div>
   );

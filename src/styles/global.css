@@ -1055,3 +1055,75 @@ p { text-wrap: pretty; }
 .tag.turnuva-acik, .tag.basvuru-onaylandi { border-color: color-mix(in srgb, #1d7a3d 45%, transparent); color: #1d7a3d; }
 .tag.turnuva-taslak { opacity: .65; }
 .tag.turnuva-kapali, .tag.basvuru-reddedildi { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: var(--red); }
+
+/* Admin: başvuru araç çubuğu, filtre ve oyuncu profili */
+.admin-arac {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; margin-top: 18px;
+}
+.admin-mini.aktif { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.admin-sirala { display: flex; align-items: center; gap: 8px; }
+.admin-sirala select {
+  font: inherit; font-size: 14px; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 6px 10px;
+}
+.geo-profil { display: flex; flex-direction: column; gap: 2px; }
+.geo-profil .t-day { font-size: 12.5px; white-space: nowrap; }
+
+/* Admin: sekmeler, açılır menüler, lig rozeti, tablo düzeni */
+.admin-sekmeler {
+  display: flex; border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden; background: #fff;
+}
+.admin-sekme {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 10px 18px; color: var(--ink-2);
+}
+.admin-sekme + .admin-sekme { border-left: 1px solid var(--line); }
+.admin-sekme.aktif { background: var(--ink); color: var(--paper); }
+
+.acilir { position: relative; }
+.acilir-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+  min-width: 200px; padding: 6px;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(26, 22, 17, 0.12);
+  display: flex; flex-direction: column;
+}
+.acilir-panel button {
+  text-align: left; padding: 8px 11px; font-size: 14.5px;
+  border-radius: var(--radius);
+}
+.acilir-panel button:hover { background: var(--paper-2); }
+.acilir-panel button.secili { background: var(--ink); color: var(--paper); }
+
+.admin-ozet { font-size: 13.5px; color: var(--ink-2); white-space: nowrap; }
+.admin-ozet .onay-sayi { color: #1d7a3d; }
+
+.lig-rozet {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  letter-spacing: 0.04em; white-space: nowrap;
+}
+.lig-rozet svg { flex: none; }
+
+/* Tablo hizalaması: her hücre dikeyde ortalı, sabit ritim */
+.admin-tablo { min-width: 860px; }
+.admin-tablo td { padding: 14px; }
+.admin-tablo .t-name { font-size: 15.5px; }
+.admin-tablo .kolon-ad { color: var(--ink-2); }
+.admin-tablo th.kolon-islem { text-align: right; }
+.geo-profil { display: flex; flex-direction: column; gap: 4px; }
+.geo-profil .admin-link { font-weight: 600; width: fit-content; }
+.geo-alt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.geo-alt .t-day { font-size: 12px; font-weight: 500; }
+.admin-islemler { display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-end; }
+
+/* Dikey form düzeni (kulüp başvurusu) */
+.t-form-dikey .t-form-grid { grid-template-columns: 1fr; max-width: 520px; }
+
+/* İkon buton (filtre / sırala) */
+.ikon-btn { display: inline-flex; align-items: center; padding: 7px 9px; }
+.ikon-btn svg { display: block; }

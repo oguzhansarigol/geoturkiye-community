@@ -14,11 +14,10 @@ Bağımsız bir topluluk projesidir; GeoGuessr AB ile resmi bir bağı yoktur.
 - Canlı harita: Google Maps görünümüne yakın CARTO Voyager altlığı,
   şehir pinleri, Türkiye sınırları içinde beliren canlı tahmin noktaları
   ve haritaya tıklayınca fırlayan 5K animasyonu (API anahtarı gerektirmez)
-- Sayfa geçişleri ve kaydırma animasyonları (Motion), hareket azaltma
-  tercihine tam saygı
+- Sayfa geçişleri ve kaydırma animasyonları (Motion)
 - Kartografik tasarım dili: topografya desenleri, koordinat etiketleri,
   Google Sans Flex ve Google Sans Code
-- SEO hazır: sayfa bazlı başlık ve açıklamalar, Open Graph, JSON-LD,
+- SEO: sayfa bazlı başlık ve açıklamalar, Open Graph, JSON-LD,
   robots.txt, sitemap.xml
 - Güvenlik başlıkları: CSP, HSTS, X-Frame-Options ve diğerleri
   (public/_headers)

@@ -1,6 +1,7 @@
 import Page from "../components/Page.jsx";
 import Reveal from "../components/Reveal.jsx";
 import Btn from "../components/Btn.jsx";
+import KulupBasvuru from "../components/KulupBasvuru.jsx";
 import { useLang } from "../i18n.jsx";
 
 // Kulüp bilgileri src/metinler.jsx içindeki kulupler.liste dizisinden gelir.
@@ -15,11 +16,16 @@ export default function Kulupler() {
           <Reveal><p className="eyebrow">{s.eyebrow}</p></Reveal>
           <Reveal delay={0.06}><h1>{s.h1}</h1></Reveal>
           <Reveal delay={0.12}><p className="lead">{s.lead}</p></Reveal>
+          <Reveal delay={0.18}>
+            <div style={{ marginTop: 26 }}>
+              <Btn href="#kulup-basvuru" kind="red" arrow="↓">{s.basvurBtn}</Btn>
+            </div>
+          </Reveal>
         </div>
         <span className="page-coords">{s.koordinat}</span>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ paddingTop: 28 }}>
         <div className="container">
           <div className="club-grid">
             {s.liste.map((k, i) => (
@@ -41,6 +47,9 @@ export default function Kulupler() {
           </Reveal>
         </div>
       </section>
+
+      {/* Kulüp başvuru formu (Supabase) */}
+      <KulupBasvuru kulupler={s.liste} />
     </Page>
   );
 }
