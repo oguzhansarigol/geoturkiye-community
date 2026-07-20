@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 const MotionLink = motion.create(Link);
 
 // kind: red | ink | ghost | light | ghost-light
-// İç sayfa için `to`, dış bağlantı için `href` kullanın.
+// İç sayfa için `to`, dış bağlantı için `href` kullanın;
+// ikisi de verilmezse gerçek bir <button> üretir (formlar için).
 export default function Btn({ to, href, kind = "red", arrow, children, ...rest }) {
   const cls = `btn btn--${kind}`;
   const micro = { whileTap: { scale: 0.97 }, whileHover: { y: -2 } };
@@ -14,6 +15,14 @@ export default function Btn({ to, href, kind = "red", arrow, children, ...rest }
       {arrow && <span className="arr">{arrow}</span>}
     </>
   );
+
+  if (!to && !href) {
+    return (
+      <motion.button className={cls} {...micro} {...rest}>
+        {inner}
+      </motion.button>
+    );
+  }
 
   if (to) {
     return (

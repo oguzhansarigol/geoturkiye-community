@@ -11,6 +11,7 @@ import Etkinlikler from "./pages/Etkinlikler.jsx";
 import Kulupler from "./pages/Kulupler.jsx";
 import FaydaliSiteler from "./pages/FaydaliSiteler.jsx";
 import Katil from "./pages/Katil.jsx";
+import Admin from "./pages/Admin.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/kulupler" element={<Kulupler />} />
           <Route path="/faydali-siteler" element={<FaydaliSiteler />} />
           <Route path="/katil" element={<Katil />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </AnimatePresence>

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import Page from "../components/Page.jsx";
 import Reveal from "../components/Reveal.jsx";
 import Btn from "../components/Btn.jsx";
 import CtaBand from "../components/CtaBand.jsx";
+import TurnuvaBasvuru from "../components/TurnuvaBasvuru.jsx";
 import { DISCORD_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
@@ -19,6 +21,8 @@ function InsaatIkon() {
 export default function Etkinlikler() {
   const { t } = useLang();
   const s = t.etkinlikler;
+  // Açık turnuva var mı? "var" ise inşaat bildirimi gizlenir.
+  const [turnuvaDurum, setTurnuvaDurum] = useState("bilinmiyor");
 
   return (
     <Page title={s.title} description={s.desc}>
@@ -31,7 +35,11 @@ export default function Etkinlikler() {
         <span className="page-coords">{s.koordinat}</span>
       </section>
 
-      {/* İnşaat hâlinde bildirimi */}
+      {/* Açık turnuvalar + başvuru formu (Supabase) */}
+      <TurnuvaBasvuru onDurum={setTurnuvaDurum} />
+
+      {/* İnşaat hâlinde bildirimi — açık turnuva yoksa gösterilir */}
+      {turnuvaDurum !== "var" && (
       <section className="section">
         <div className="container">
           <Reveal>
@@ -48,6 +56,7 @@ export default function Etkinlikler() {
           </Reveal>
         </div>
       </section>
+      )}
 
       {/* Geçmiş turnuvalar */}
       <section className="section" style={{ paddingTop: 0 }}>

@@ -976,3 +976,82 @@ p { text-wrap: pretty; }
 
 /* ---------- Yardımcılar ---------- */
 .mt-btn { margin-top: 36px; }
+
+/* ---------- Turnuva başvuru sistemi ---------- */
+.t-kart {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  margin-bottom: 18px;
+}
+.t-kart-ust {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap;
+}
+.t-kart-ad { font-size: 22px; margin-bottom: 8px; }
+.t-kart-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.t-kart-aciklama { margin-top: 14px; color: var(--ink-2); max-width: 70ch; }
+.t-dolu { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: var(--red); }
+
+.t-form { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 22px; }
+.t-form-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px; margin-bottom: 18px;
+}
+.t-form label { display: flex; flex-direction: column; gap: 6px; }
+.t-form label span {
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+}
+.t-form input, .t-form select, .t-form textarea {
+  font: inherit; color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.t-form input:focus, .t-form select:focus, .t-form textarea:focus {
+  outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red);
+}
+.t-form-genis { grid-column: 1 / -1; }
+.t-form-alt { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.t-discord-not { font-size: 14px; color: var(--ink-2); max-width: 46ch; }
+
+.form-hata {
+  color: var(--red-deep); font-size: 14.5px; margin-bottom: 14px;
+  border-left: 3px solid var(--red); padding-left: 10px;
+}
+.form-basari {
+  margin-top: 20px; border: 1px solid color-mix(in srgb, #1d7a3d 40%, transparent);
+  background: color-mix(in srgb, #1d7a3d 7%, #fff);
+  padding: 18px 20px; border-radius: var(--radius);
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.form-basari b { color: #1d7a3d; margin-right: 4px; }
+
+/* ---------- Admin paneli ---------- */
+.admin-giris { max-width: 460px; border-top: 0; padding-top: 0; }
+.admin-giris h2 { margin-bottom: 18px; }
+.admin-t-form { border: 1px solid var(--line); background: #fff; padding: 22px; margin-bottom: 18px; }
+.admin-panel .admin-ust {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.admin-satir { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.admin-mini {
+  font-family: var(--font-mono); font-size: 12.5px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 6px 12px; background: var(--paper);
+  transition: border-color .15s ease, color .15s ease;
+}
+.admin-mini:hover { border-color: var(--ink); }
+.admin-mini.onay:hover { border-color: #1d7a3d; color: #1d7a3d; }
+.admin-mini.red:hover { border-color: var(--red); color: var(--red); }
+.admin-link { text-decoration: underline; text-underline-offset: 3px; }
+.admin-tablo { margin-top: 18px; }
+.admin-islemler { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag.turnuva-acik, .tag.basvuru-onaylandi { border-color: color-mix(in srgb, #1d7a3d 45%, transparent); color: #1d7a3d; }
+.tag.turnuva-taslak { opacity: .65; }
+.tag.turnuva-kapali, .tag.basvuru-reddedildi { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: var(--red); }
