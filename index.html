@@ -8,6 +8,20 @@
   <meta name="keywords" content="GeoGuessr, GeoGuessr Türkiye, GeoGuessr Türkçe, GeoGuessr turnuva, GeoGuessr Discord, GeoGuessr kulüp, GeoGuessr rehber, coğrafya oyunu" />
   <meta name="author" content="GeoGuessr Türkiye Topluluğu" />
   <meta name="theme-color" content="#F5F2EA" />
+  <script>
+    (function () {
+      try {
+        var kayit = localStorage.getItem("ggtr-tema");
+        var tema = (kayit === "light" || kayit === "dark")
+          ? kayit
+          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = tema;
+        document.documentElement.style.colorScheme = tema;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", tema === "dark" ? "#161310" : "#F5F2EA");
+      } catch (e) {}
+    })();
+  </script>
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <link rel="canonical" href="https://geoturkiye.community/" />
   <link rel="alternate" hreflang="tr" href="https://geoturkiye.community/" />

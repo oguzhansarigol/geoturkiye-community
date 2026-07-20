@@ -3,6 +3,7 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { DISCORD_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
+import { useTheme } from "../theme.jsx";
 
 // Marka işareti: ay-yıldızlı konum pini (public/logo.png)
 export function BrandMark() {
@@ -26,6 +27,32 @@ function LangToggle() {
       <span aria-hidden="true">/</span>
       <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const { t } = useLang();
+  const koyu = theme === "dark";
+  return (
+    <button
+      type="button"
+      className="tema-tog"
+      onClick={toggleTheme}
+      aria-label={koyu ? t.nav.temaAcik : t.nav.temaKoyu}
+      title={koyu ? t.nav.temaAcik : t.nav.temaKoyu}
+    >
+      {koyu ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path strokeLinecap="round" d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5Z" />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -70,6 +97,7 @@ export default function Header() {
           </nav>
 
           <div className="header-right">
+            <ThemeToggle />
             <LangToggle />
             <button
               className="nav-toggle"
