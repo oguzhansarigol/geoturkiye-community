@@ -19,12 +19,22 @@ create unique index if not exists kulup_basvuru_tekil
 
 alter table public.kulup_basvurulari enable row level security;
 
--- Herkes başvuru ekleyebilir (sadece "bekliyor" durumunda)
+-- Tablo geneli mutlak tavan (toplu sahte başvuru koruması)
+create or replace function public.kulup_tavani_asilmadi()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select count(*) < 10000 from kulup_basvurulari
+$$;
+
+-- Herkes başvuru ekleyebilir (sadece "bekliyor" durumunda ve tavan aşılmadıysa)
 drop policy if exists "herkes kulup basvurusu yapar" on public.kulup_basvurulari;
 create policy "herkes kulup basvurusu yapar"
   on public.kulup_basvurulari for insert
   to anon
-  with check (durum = 'bekliyor');
+  with check (durum = 'bekliyor' and public.kulup_tavani_asilmadi());
 
 -- Sadece giriş yapmış adminler okuyabilir / güncelleyebilir / silebilir
 drop policy if exists "adminler kulup basvurularini yonetir" on public.kulup_basvurulari;

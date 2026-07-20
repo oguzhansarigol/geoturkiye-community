@@ -40,9 +40,11 @@ language sql
 security definer
 set search_path = public
 as $$
+  -- Kontenjan belirtilmemiş turnuvalarda bile mutlak tavan 10000 kayıttır
+  -- (toplu sahte başvuru koruması).
   select t.durum = 'acik'
-     and (t.max_katilimci is null
-          or (select count(*) from basvurular b where b.turnuva_id = tid) < t.max_katilimci)
+     and (select count(*) from basvurular b where b.turnuva_id = tid)
+         < least(coalesce(t.max_katilimci, 10000), 10000)
   from turnuvalar t
   where t.id = tid
 $$;
