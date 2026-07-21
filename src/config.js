@@ -7,13 +7,8 @@
 // Discord davet linki
 export const DISCORD_URL = "https://discord.gg/JqxyV9PxdV";
 
-// GÜNCELLE: İletişim e-postanız (domain: geoturkiye.community)
-export const EMAIL = "iletisim@geoturkiye.community";
-
-// GÜNCELLE: Sosyal medya hesaplarınız (kullanmadığınız satırı silin)
+// Sosyal medya hesapları (yeni hesap açılınca buraya ekleyin,
+// footer'da otomatik görünür — örn. { ad: "YouTube", url: "https://..." })
 export const SOCIALS = [
   { ad: "Discord", url: DISCORD_URL },
-  { ad: "X / Twitter", url: "#" },
-  { ad: "YouTube", url: "#" },
-  { ad: "Twitch", url: "#" },
 ];

@@ -141,6 +141,9 @@ p { text-wrap: pretty; }
 .ch.bl { bottom: -7px; left: -7px; }
 .ch.br { bottom: -7px; right: -7px; }
 
+/* Hash linkiyle gelinen bölümler (#ekip, #sss...) sabit header'ın altında kalmasın */
+section[id] { scroll-margin-top: 88px; }
+
 /* ---------- Header ---------- */
 .site-header {
   position: fixed; inset: 0 0 auto 0; z-index: 100;

@@ -18,8 +18,15 @@ export default function App() {
   const { t } = useLang();
 
   useEffect(() => {
+    if (location.hash) {
+      // Sayfa geçiş animasyonu bitene kadar hedef DOM'da olmayabilir
+      const zamanlayici = setTimeout(() => {
+        document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 450);
+      return () => clearTimeout(zamanlayici);
+    }
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     sesleriBaslat();

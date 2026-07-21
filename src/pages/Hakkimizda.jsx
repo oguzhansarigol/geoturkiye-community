@@ -118,6 +118,59 @@ export default function Hakkimizda() {
         </div>
       </section>
 
+      <section className="section" id="ekip" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow">{s.ekipEyebrow}</p>
+            <h2>{s.ekipH2}</h2>
+            <p className="lead">{s.ekipLead}</p>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="kisi-grid">
+              {s.ekipKisiler.map((k) => (
+                <article className="kisi-cell" key={k.ad}>
+                  <div className="kisi-gorsel">
+                    {k.img ? (
+                      <img className="kisi-foto" src={k.img} alt={k.ad} loading="lazy" width="480" height="480" />
+                    ) : (
+                      <span className="kisi-bas" aria-hidden="true">
+                        {k.ad.split(" ").map((p) => p[0]).slice(0, 2).join("")}
+                      </span>
+                    )}
+                  </div>
+                  <h3>{k.ad}</h3>
+                  <span className="kisi-rol">{k.rol}</span>
+                  <div className="kisi-sosyal">
+                    {k.youtube && (
+                      <a href={k.youtube} target="_blank" rel="noopener" aria-label={`${k.ad} YouTube`}><YouTubeIkon /></a>
+                    )}
+                    {k.instagram && (
+                      <a href={k.instagram} target="_blank" rel="noopener" aria-label={`${k.ad} Instagram`}><InstagramIkon /></a>
+                    )}
+                    {k.kick && (
+                      <a href={k.kick} target="_blank" rel="noopener" aria-label={`${k.ad} Kick`}><KickIkon /></a>
+                    )}
+                  </div>
+                </article>
+              ))}
+              <article className="kisi-cell">
+                <div className="kisi-gorsel">
+                  <div className="kisi-yigin" aria-hidden="true">
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka"><Siluet /></span>
+                    <span className="ka arti">+</span>
+                  </div>
+                </div>
+                <h3>{s.ekipCokluBaslik}</h3>
+                <p>{s.ekipCokluP}</p>
+              </article>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* İlkeler: açık atlas — her ilke bir harita sayfası */}
       <section className="section section--dark atlas-sec">
         <div className="container">
@@ -176,59 +229,6 @@ export default function Hakkimizda() {
               </Fragment>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <Reveal className="section-head">
-            <p className="eyebrow">{s.ekipEyebrow}</p>
-            <h2>{s.ekipH2}</h2>
-            <p className="lead">{s.ekipLead}</p>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <div className="kisi-grid">
-              {s.ekipKisiler.map((k) => (
-                <article className="kisi-cell" key={k.ad}>
-                  <div className="kisi-gorsel">
-                    {k.img ? (
-                      <img className="kisi-foto" src={k.img} alt={k.ad} loading="lazy" width="480" height="480" />
-                    ) : (
-                      <span className="kisi-bas" aria-hidden="true">
-                        {k.ad.split(" ").map((p) => p[0]).slice(0, 2).join("")}
-                      </span>
-                    )}
-                  </div>
-                  <h3>{k.ad}</h3>
-                  <span className="kisi-rol">{k.rol}</span>
-                  <div className="kisi-sosyal">
-                    {k.youtube && (
-                      <a href={k.youtube} target="_blank" rel="noopener" aria-label={`${k.ad} YouTube`}><YouTubeIkon /></a>
-                    )}
-                    {k.instagram && (
-                      <a href={k.instagram} target="_blank" rel="noopener" aria-label={`${k.ad} Instagram`}><InstagramIkon /></a>
-                    )}
-                    {k.kick && (
-                      <a href={k.kick} target="_blank" rel="noopener" aria-label={`${k.ad} Kick`}><KickIkon /></a>
-                    )}
-                  </div>
-                </article>
-              ))}
-              <article className="kisi-cell">
-                <div className="kisi-gorsel">
-                  <div className="kisi-yigin" aria-hidden="true">
-                    <span className="ka"><Siluet /></span>
-                    <span className="ka"><Siluet /></span>
-                    <span className="ka"><Siluet /></span>
-                    <span className="ka"><Siluet /></span>
-                    <span className="ka arti">+</span>
-                  </div>
-                </div>
-                <h3>{s.ekipCokluBaslik}</h3>
-                <p>{s.ekipCokluP}</p>
-              </article>
-            </div>
-          </Reveal>
         </div>
       </section>
 

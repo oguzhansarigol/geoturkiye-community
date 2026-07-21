@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { BrandMark } from "./Header.jsx";
-import { SOCIALS } from "../config.js";
+import { SOCIALS, DISCORD_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
 export default function Footer() {
@@ -37,7 +37,8 @@ export default function Footer() {
           <div className="footer-col">
             <h4>{f.iletisim}</h4>
             <ul>
-              <li><span className="not-yet">{f.mailYok}</span></li>
+              <li><a href={DISCORD_URL} target="_blank" rel="noopener">{f.discordUzerinden} ↗</a></li>
+              <li><Link to="/hakkimizda#ekip">{f.ekibimiz}</Link></li>
               <li><Link to="/katil#sss">{f.sss}</Link></li>
             </ul>
           </div>
