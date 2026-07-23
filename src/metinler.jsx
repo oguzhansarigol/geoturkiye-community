@@ -63,7 +63,7 @@ export const METIN = {
       manifesto2: "İster daha ilk tahminini yapıyor ol, ister dünya sıralamasında yarışıyor ol: bu çatının altında herkese yer var. Aramıza katılan herkesi ilk günkü heyecanla karşılıyoruz.",
       faktalar: [
         { n: 81, say: true, l: "İlden Oyuncu" },
-        { n: 1300, say: true, ek: "+", l: "Üye" },
+        { n: 1400, say: true, ek: "+", l: "Üye" },
         { n: "7/24", l: "Aktif Topluluk" },
         { n: "∞", l: "Konum Sayısı" },
       ],
@@ -351,7 +351,7 @@ export const METIN = {
       manifesto2: "Whether you're making your very first guess or competing in the world rankings, there is a place for you here. We welcome every newcomer with the same excitement as day one.",
       faktalar: [
         { n: 81, say: true, l: "Provinces Represented" },
-        { n: 1300, say: true, ek: "+", l: "Members" },
+        { n: 1400, say: true, ek: "+", l: "Members" },
         { n: "24/7", l: "Always Active" },
         { n: "∞", l: "Locations" },
       ],
