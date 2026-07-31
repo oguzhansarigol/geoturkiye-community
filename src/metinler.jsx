@@ -177,9 +177,9 @@ export const METIN = {
       tabloBasliklar: ["#", "Turnuva", "Tarih", "Format", "Yayın"],
       izle: "İzle",
       gecmis: [
-        { no: "01", ad: "GeoGuessr Türkiye Topluluk Turnuvası #1", tarih: "5 Ağu 2023", tur: "Çevrim içi" },
-        { no: "02", ad: "GeoGuessr Türkiye Topluluk Turnuvası #2", tarih: "2 Eyl 2023", tur: "Çevrim içi" },
-        { no: "03", ad: "GeoGuessr Türkiye Topluluk Turnuvası #3", tarih: "3 Eyl 2023", tur: "Çevrim içi", yayin: "https://youtu.be/WpoKnEblq5I?si=3cjngaPkGxpuhA3R" },
+        { no: "01", ad: "GeoGuessr Türkiye Topluluk Turnuvası", tarih: "5 Ağu 2023", tur: "Çevrim içi" },
+        { no: "02", ad: "GeoGuessr Türkiye Topluluk Turnuvası", tarih: "2 Eyl 2023", tur: "Çevrim içi" },
+        { no: "03", ad: "GeoGuessr Türkiye Topluluk Turnuvası", tarih: "3 Eyl 2023", tur: "Çevrim içi", yayin: "https://youtu.be/WpoKnEblq5I?si=3cjngaPkGxpuhA3R" },
         { no: "04", ad: "GeoGuessr Türkiye Topluluk Turnuvası", tarih: "29 Mar 2024", tur: "Çevrim içi", yayin: "https://www.youtube.com/live/AqFTVVcXhIM?si=6xVCWhJ-nht4DTd1" },
         { no: "05", ad: "GeoGuessr Türkiye Topluluk Turnuvası", tarih: "21 Tem 2024", tur: "Çevrim içi", yayin: "https://www.youtube.com/live/LRNQJddJjBM?si=jgK3kq2J8Ea2Uopd" },
         { no: "06", ad: "GeoGuessr Türkiye En İyiler Turnuvası", tarih: "13 Tem 2025", tur: "Çevrim içi", yayin: "https://www.youtube.com/live/lYD8AA9u0qU?si=T1xmCa8mzRP1j59F" },
