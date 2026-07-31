@@ -7,6 +7,10 @@
 // Discord davet linki
 export const DISCORD_URL = "https://discord.gg/JqxyV9PxdV";
 
+// Günlük challenge kanalı (Discord — #günlük-challenge)
+export const GUNLUK_CHALLENGE_URL =
+  "https://discord.com/channels/1042174912292470845/1147290291901055067";
+
 // Sosyal medya hesapları (yeni hesap açılınca buraya ekleyin,
 // footer'da otomatik görünür — örn. { ad: "YouTube", url: "https://..." })
 export const SOCIALS = [

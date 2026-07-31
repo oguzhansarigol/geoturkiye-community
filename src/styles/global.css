@@ -453,13 +453,6 @@ section[id] { scroll-margin-top: 88px; }
   font-family: var(--font-mono); font-size: 12px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--red);
 }
-/* İnşaat hâlinde: üstte kırmızı ikaz bandı */
-.construction { overflow: hidden; }
-.construction .hazard {
-  position: absolute; top: 0; left: 0; right: 0; height: 10px;
-  background: repeating-linear-gradient(-45deg, var(--red) 0 16px, transparent 16px 32px);
-  opacity: .8;
-}
 .notice-plate h3 { font-size: clamp(24px, 3vw, 34px); margin-top: 12px; }
 .notice-plate > p { margin-top: 12px; color: var(--ink-2); max-width: 60ch; }
 .notice-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
@@ -774,6 +767,21 @@ html[data-theme="dark"] .cta-note { color: var(--dark-soft); }
   color: var(--ink-2); display: none;
 }
 @media (min-width: 900px) { .page-hero .page-coords { display: block; } }
+
+/* Etkinlikler: diğer sayfalardaki eş yükselti blob'ları yerine
+   sağ üst köşeden yayılan halkalar (konum "ping" motifi) */
+.page-hero--etkinlik {
+  background: url("/topo-etkinlikler.svg") no-repeat right -60px top -40px / 980px auto;
+}
+
+/* Geçmiş turnuvalar: yayın linki */
+.yayin-link {
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--red);
+  text-decoration: none; white-space: nowrap;
+}
+.yayin-link:hover { text-decoration: underline; }
+.yayin-yok { color: var(--ink-2); opacity: .5; }
 
 /* ---------- Değerler / roller ---------- */
 .value-grid {

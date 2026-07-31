@@ -72,7 +72,7 @@ function TurnuvaKart({ turnuva, sayi }) {
       {durum === "basarili" ? (
         <div className="form-basari" role="status">
           <p><b>✓</b> {s.fBasari}</p>
-          <Btn href={DISCORD_URL} kind="red" arrow="↗">{s.insaBtn}</Btn>
+          <Btn href={DISCORD_URL} kind="red" arrow="↗">{s.ctaBtn1}</Btn>
         </div>
       ) : (
         acik && !dolu && (
@@ -117,7 +117,7 @@ function TurnuvaKart({ turnuva, sayi }) {
 }
 
 // Açık turnuvaları listeler; Supabase yapılandırılmamışsa veya açık
-// turnuva yoksa null döner (sayfa bu durumda inşaat bildirimini gösterir).
+// turnuva yoksa null döner (bölüm hiç görünmez).
 export default function TurnuvaBasvuru({ onDurum }) {
   const { t } = useLang();
   const s = t.etkinlikler;
