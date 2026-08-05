@@ -46,6 +46,7 @@ export const METIN = {
         izle: "Canlı İzle",
         agac: "Turnuva Ağacı",
         sponsor: "Sponsorluk Başvurusu",
+        kopyalandi: "E-posta kopyalandı ✓",
       },
       eyebrow: "Türkiye'nin GeoGuessr Topluluğu",
       h1: [
@@ -354,6 +355,7 @@ export const METIN = {
         izle: "Watch Live",
         agac: "Tournament Bracket",
         sponsor: "Sponsorship Inquiry",
+        kopyalandi: "Email copied ✓",
       },
       eyebrow: "Türkiye's GeoGuessr Community",
       h1: [

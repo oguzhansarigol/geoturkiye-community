@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { Link } from "react-router-dom";
 import Page from "../components/Page.jsx";
@@ -29,6 +29,19 @@ export default function Home() {
   const { t } = useLang();
   const s = t.home;
   const reduced = useReducedMotion();
+  const [sponsorKopyalandi, setSponsorKopyalandi] = useState(false);
+
+  // mailto, cihazda varsayılan e-posta uygulaması yoksa sessizce hiçbir
+  // şey yapmaz; garanti olsun diye adres tıklamada panoya da kopyalanır.
+  function sponsorTikla() {
+    try {
+      navigator.clipboard.writeText(SPONSOR_EPOSTA);
+      setSponsorKopyalandi(true);
+      setTimeout(() => setSponsorKopyalandi(false), 2500);
+    } catch {
+      /* pano erişimi yoksa mailto denemesi yeterli */
+    }
+  }
 
   // Harita bölümü hafif parallax ile kayar
   const { scrollY } = useScroll();
@@ -63,8 +76,12 @@ export default function Home() {
               <span className="turnuva-bar-nokta" aria-hidden="true" /> {s.bar.izle}
             </a>
             <Link to="/etkinlikler#turnuva-agaci">{s.bar.agac}</Link>
-            <a href={`mailto:${SPONSOR_EPOSTA}?subject=${encodeURIComponent(s.bar.baslik + " — " + s.bar.sponsor)}`}>
-              {s.bar.sponsor}
+            <a
+              href={`mailto:${SPONSOR_EPOSTA}?subject=${encodeURIComponent(s.bar.baslik + " — " + s.bar.sponsor)}`}
+              onClick={sponsorTikla}
+              title={SPONSOR_EPOSTA}
+            >
+              {sponsorKopyalandi ? s.bar.kopyalandi : s.bar.sponsor}
             </a>
           </div>
         </div>
