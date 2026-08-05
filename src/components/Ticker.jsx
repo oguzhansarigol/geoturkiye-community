@@ -1,4 +1,5 @@
 import { useLang } from "../i18n.jsx";
+import CopAdam from "./CopAdam.jsx";
 
 const SEHIRLER = [
   ["İSTANBUL", "41.01", "28.98"],
@@ -41,19 +42,6 @@ const YURUYENLER = [
   { dur: 40, gec: -37, boy: 0.95, adim: 0.47 },
   { dur: 48, gec: -47, boy: 0.85, adim: 0.44, geri: true },
 ];
-
-function CopAdam() {
-  return (
-    <svg viewBox="0 0 10 13" width="9.2" height="12">
-      <circle cx="5" cy="2" r="1.7" fill="currentColor" />
-      <line x1="5" y1="3.7" x2="5" y2="8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <line className="ca-kol on" x1="5" y1="4.7" x2="5" y2="7.9" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-      <line className="ca-kol arka" x1="5" y1="4.7" x2="5" y2="7.9" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-      <line className="ca-bacak on" x1="5" y1="8" x2="5" y2="12.7" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
-      <line className="ca-bacak arka" x1="5" y1="8" x2="5" y2="12.7" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 export default function Ticker() {
   const { lang } = useLang();

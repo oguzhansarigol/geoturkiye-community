@@ -1488,4 +1488,315 @@ html[data-theme="dark"] .agac-mac { background: var(--paper-2); }
 
 /* Kilometre taşı fotoğrafları daireyi doldurur */
 .yh-daire { overflow: hidden; }
+
+/* ============================================================
+   Davet sayfası (/davet/…) — tam ekran sinematik davetiye
+   ============================================================ */
+.davet {
+  position: relative; min-height: 100vh; overflow: hidden;
+  background: #120607;
+  color: #f4e9e2;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(40px, 7vh, 80px) var(--gutter) 120px;
+}
+/* Sol üstte ufak ana sayfaya dönüş bağlantısı */
+.davet-geri {
+  position: absolute; z-index: 4; top: 18px; left: 20px;
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 600;
+  letter-spacing: .06em; text-decoration: none;
+  color: rgba(244, 233, 226, .55);
+  border: 1px solid rgba(244, 233, 226, .2);
+  border-radius: 999px; padding: 7px 14px;
+  background: rgba(18, 6, 7, .5); backdrop-filter: blur(4px);
+  transition: color .18s ease, border-color .18s ease, background .18s ease;
+}
+.davet-geri:hover {
+  color: #ffe9da; border-color: rgba(255, 141, 104, .6);
+  background: rgba(227, 10, 23, .14);
+}
+
+/* Topografya: koyu zeminde kızıl çizgiler */
+.davet-topo { position: absolute; inset: 0; }
+.davet-topo .topo-live {
+  mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 70%, transparent 100%);
+}
+.davet-topo .topo-live path { stroke: rgba(227, 10, 23, .3); }
+.davet-topo .topo-live path.flow { stroke: rgba(255, 110, 70, .42); }
+/* Yumuşak ışık huzmeleri */
+.davet-isik {
+  position: absolute; pointer-events: none; filter: blur(60px); opacity: .5;
+}
+.davet-isik--a {
+  width: 60vw; height: 40vh; left: -12vw; top: -8vh; transform: rotate(-18deg);
+  background: radial-gradient(closest-side, rgba(227, 10, 23, .34), transparent 70%);
+  animation: davetIsik 9s ease-in-out infinite alternate;
+}
+.davet-isik--b {
+  width: 50vw; height: 45vh; right: -14vw; bottom: -6vh; transform: rotate(14deg);
+  background: radial-gradient(closest-side, rgba(255, 122, 40, .2), transparent 70%);
+  animation: davetIsik 12s ease-in-out infinite alternate-reverse;
+}
+@keyframes davetIsik { from { opacity: .3; } to { opacity: .62; } }
+
+.davet-sahne {
+  position: relative; z-index: 2; width: min(680px, 100%);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+/* Sayfaya dağılmış minik ışıltılar */
+.davet-kivilcimlar { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.davet-kivilcim {
+  position: absolute; border-radius: 50%;
+  background: #ffd9c4; opacity: 0;
+  box-shadow: 0 0 6px 1px rgba(255, 170, 130, .55);
+  animation: davetYildiz 4.2s ease-in-out infinite;
+}
+.davet-marka {
+  position: relative; z-index: 3;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  letter-spacing: .34em; text-transform: uppercase; color: rgba(244, 233, 226, .6);
+  /* Zarf kapağının üste taşan ucu markaya değmesin */
+  margin-bottom: clamp(52px, 8vh, 84px);
+}
+
+/* ---- Zarf + kart ---- */
+.davet-zarf {
+  position: relative; width: min(560px, 100%);
+  margin-bottom: clamp(30px, 5vh, 52px);
+  /* Fare ile hafif 3B eğilme (--rx/--ry değerleri JSX'te yazılır) */
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .18s ease-out;
+  will-change: transform;
+}
+.davet-parilti {
+  position: absolute; left: 50%; top: 42%; width: 130%; height: 130%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255, 110, 50, .38), rgba(227, 10, 23, .16) 55%, transparent 75%);
+  filter: blur(24px);
+  animation: davetParilti 4.5s ease-in-out infinite alternate;
+  transition: opacity .6s ease;
+}
+@keyframes davetParilti { from { opacity: .65; } to { opacity: 1; } }
+/* Zarf gövdesi (arka panel): kart bunun içinden yükselir. Açık kapak
+   ::before ile gövdenin üst kenarına BİTİŞİK çizilir — kopukluk olmaz.
+   Kapalı durumda kapak, alt kenarı etrafında öne katlanıp mühürlenir. */
+.davet-zarf-arka {
+  position: absolute; left: 0; right: 0; top: 34%; bottom: -7%;
+  background: linear-gradient(to bottom, #40201b, #241210);
+  border-radius: var(--radius);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .05);
+  perspective: 900px;
+}
+.davet-zarf-arka::before {
+  content: ""; position: absolute; left: 0; right: 0;
+  bottom: calc(100% - 1px); height: 66%;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  background: linear-gradient(to bottom, rgba(80, 39, 33, .97), rgba(46, 21, 18, .98));
+  border-radius: var(--radius) var(--radius) 0 0;
+  transform-origin: bottom center;
+  transition: transform 1.15s cubic-bezier(.35, .8, .3, 1);
+}
+.davet-kart {
+  position: relative; z-index: 1; overflow: hidden;
+  margin: 0 auto; width: 78%;
+  padding: clamp(28px, 4.6vw, 42px) clamp(18px, 3.6vw, 36px) clamp(52px, 8vw, 76px);
+  border-radius: 3px;
+  background:
+    radial-gradient(120% 90% at 50% 100%, rgba(255, 154, 60, .55), transparent 55%),
+    linear-gradient(165deg, #a3071a 0%, #e30a17 46%, #ff6a3a 100%);
+  box-shadow: 0 18px 60px rgba(227, 10, 23, .35), inset 0 0 0 1px rgba(255, 255, 255, .14);
+  /* Kapak açılmaya başladıktan bir nefes sonra kart süzülerek yükselir.
+     Opaklık, kart zarfın içinden yukarı çıkana dek sıfırda tutulur —
+     böylece kart zarfın altından geliyormuş gibi görünmez. */
+  animation: davetKartYuksel 1.3s cubic-bezier(.2, .8, .25, 1) .3s both;
+}
+@keyframes davetKartYuksel {
+  0%   { transform: translateY(40px); opacity: 0; }
+  35%  { opacity: 0; }
+  75%  { opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+.davet-kose {
+  position: absolute; top: 14px; width: 18px; height: 18px;
+  border-top: 2px solid rgba(255, 255, 255, .55);
+}
+.davet-kose--sol { left: 14px; border-left: 2px solid rgba(255, 255, 255, .55); }
+.davet-kose--sag { right: 14px; border-right: 2px solid rgba(255, 255, 255, .55); }
+.davet-kart-ust {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase; color: rgba(255, 244, 235, .85);
+  margin-bottom: 18px;
+}
+.davet-kart h1 {
+  font-size: clamp(23px, 4vw, 33px); line-height: 1.16; letter-spacing: -0.01em;
+  color: #fff8f2; margin: 0 auto 4px; max-width: 17ch;
+}
+.davet-kart-metin { font-size: clamp(16px, 2.4vw, 20px); color: #ffe9da; }
+/* Kart üzerinde yanıp sönen minik yıldızlar (konumlar JSX'te hesaplanır) */
+.davet-yildiz {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: #fff; opacity: 0;
+  animation: davetYildiz 3.4s ease-in-out infinite;
+}
+@keyframes davetYildiz {
+  0%, 100% { opacity: 0; transform: scale(.5); }
+  50% { opacity: .95; transform: scale(1); }
+}
+.davet-zarf-on {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: -7%; height: 46%;
+  clip-path: polygon(0 0, 50% 40%, 100% 0, 100% 100%, 0 100%);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .05) 0%, transparent 34%),
+    linear-gradient(245deg, rgba(255, 255, 255, .05) 0%, transparent 34%),
+    linear-gradient(to bottom, rgba(58, 27, 23, .97), rgba(30, 13, 11, .99));
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(255, 255, 255, .05);
+}
+
+/* ---- Kapalı zarf (açılış öncesi ilk kare) ---- */
+/* Kapak öne katlıdır, kart içeride gizlidir, parıltı kısıktır */
+.davet-zarf--kapali .davet-zarf-arka { z-index: 3; }
+.davet-zarf--kapali .davet-zarf-arka::before { transform: rotateX(-180deg); }
+.davet-zarf--kapali .davet-kart {
+  animation: none; opacity: 0; transform: translateY(38%) scale(.97);
+}
+.davet-zarf--kapali .davet-parilti { opacity: .25; animation: none; }
+
+/* ---- Açılış anı: zarif ışık efektleri ---- */
+.davet-isilti { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+/* Zarftan yayılan ince ışık halkaları */
+.davet-halka {
+  position: absolute; left: 50%; top: 45%;
+  width: 120px; height: 120px; border-radius: 50%;
+  translate: -50% -50%;
+  border: 1px solid rgba(255, 205, 165, .7);
+  box-shadow: 0 0 28px rgba(255, 150, 90, .3), inset 0 0 22px rgba(255, 150, 90, .2);
+  animation: davetHalka 1.7s cubic-bezier(.2, .6, .3, 1) both;
+}
+.davet-halka--gec { animation-delay: .4s; }
+@keyframes davetHalka {
+  from { opacity: .85; scale: .3; }
+  to   { opacity: 0; scale: 3.2; }
+}
+/* Zarftan süzülerek yükselen minik ışıltılar */
+.davet-suzulen {
+  position: absolute; left: var(--x); top: 55%;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #ffe0c2; box-shadow: 0 0 8px 2px rgba(255, 180, 120, .5);
+  opacity: 0;
+  animation: davetSuzul 2.5s ease-out both;
+  animation-delay: var(--gec, 0s);
+}
+@keyframes davetSuzul {
+  0%   { opacity: 0; translate: 0 0; scale: .6; }
+  20%  { opacity: .85; }
+  100% { opacity: 0; translate: 0 -150px; scale: .3; }
+}
+
+.davet-bilgi {
+  margin: -6px 0 clamp(20px, 3vh, 30px);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.davet-bilgi p {
+  font-family: var(--font-mono); font-size: 13.5px;
+  letter-spacing: .04em;
+  color: rgba(244, 233, 226, .6);
+}
+.davet-bilgi a {
+  color: #ff8d68; text-decoration: underline;
+  text-underline-offset: 3px; transition: color .15s ease;
+}
+.davet-bilgi a:hover { color: #ffb598; }
+
+/* ---- Künye ---- */
+.davet-detaylar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; width: 100%; max-width: 560px;
+}
+.davet-detay {
+  border: 1px solid rgba(244, 233, 226, .18);
+  background: rgba(255, 255, 255, .04);
+  border-radius: var(--radius); padding: 14px 8px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.davet-detay-deger {
+  font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+  line-height: 1.5; color: #ff8d68;
+}
+/* İkonlu kartlarda ikon, rakamlarla aynı yüksekliğe hizalanır */
+.davet-detay-ikon {
+  display: flex; align-items: center; justify-content: center;
+  height: 33px; color: #ff8d68;
+}
+.davet-detay-etiket {
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: .03em; color: rgba(244, 233, 226, .68);
+}
+/* Canlı yayın kartı (YouTube linki) */
+.davet-detay--canli {
+  text-decoration: none; cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.davet-detay--canli:hover {
+  border-color: #ff8d68; background: rgba(227, 10, 23, .14); transform: translateY(-2px);
+}
+.davet-kura-not {
+  margin-top: 18px; max-width: 58ch;
+  font-size: 14.5px; line-height: 1.7; color: rgba(244, 233, 226, .68);
+}
+.davet-kura-not + .davet-kura-not { margin-top: 6px; }
+.davet-kura-not--italik { font-style: italic; }
+
+/* ---- Katılım bildirimi ---- */
+.davet-rsvp { margin-top: clamp(26px, 4vh, 40px); }
+.davet-rsvp-soru {
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  letter-spacing: .04em; color: rgba(244, 233, 226, .8);
+  margin-bottom: 16px;
+}
+.davet-rsvp-btnler { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.davet-btn {
+  display: flex; flex-direction: column; gap: 2px; align-items: center;
+  font: inherit; font-weight: 700; font-size: 15.5px; color: #f4e9e2;
+  border: 1px solid rgba(244, 233, 226, .3); border-radius: var(--radius);
+  padding: 12px 22px; background: rgba(255, 255, 255, .05);
+  cursor: pointer; text-decoration: none;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.davet-btn:hover { border-color: #ff8d68; background: rgba(227, 10, 23, .16); transform: translateY(-2px); }
+.davet-btn--dolu { background: var(--red); border-color: var(--red); }
+.davet-btn--dolu:hover { background: var(--red-deep); border-color: var(--red-deep); }
+.davet-btn-alt {
+  font-family: var(--font-mono); font-weight: 400; font-size: 11.5px;
+  letter-spacing: .04em; color: rgba(255, 244, 235, .75);
+}
+
+/* ---- Yürüyen çöp adamlar (ana sayfadaki .yuruyen sistemi) ---- */
+.davet-zemin {
+  position: absolute; z-index: 1; left: 0; right: 0; bottom: 34px; height: 60px;
+  border-bottom: 1px dashed rgba(244, 233, 226, .22);
+  pointer-events: none;
+}
+
+.davet-imza {
+  position: absolute; z-index: 2; bottom: 12px; left: 0; right: 0;
+  text-align: center; font-family: var(--font-mono); font-size: 11.5px;
+  letter-spacing: .06em; color: rgba(244, 233, 226, .4);
+}
+
+@media (max-width: 560px) {
+  .davet-detaylar { grid-template-columns: repeat(2, 1fr); }
+  .davet-detay-etiket { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .davet-isik--a, .davet-isik--b, .davet-parilti, .davet-yildiz, .davet-kivilcim { animation: none; }
+  .davet-yildiz, .davet-kivilcim { opacity: .4; }
+  .davet-zemin { display: none; }
+  .davet-kart { animation: none; }
+  /* Eğilme ve açılış efektleri kapalı; kapak geçişsiz açılır */
+  .davet-zarf { transform: none !important; transition: none; }
+  .davet-zarf-arka::before { transition: none; }
+  .davet-isilti { display: none; }
+}
 .yh-daire img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }

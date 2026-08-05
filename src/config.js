@@ -14,6 +14,12 @@ export const GUNLUK_CHALLENGE_URL =
 // Turnuva yayınlarının yapıldığı YouTube kanalı
 export const TURNUVA_YAYIN_URL = "https://www.youtube.com/@oguzhansarigol";
 
+// Davetli turnuva davet sayfası — sadece bu linki bilenler görür.
+// Slug'ı değiştirirseniz eski link geçersiz olur.
+export const DAVET_YOLU = "/davet/nm-2026";
+export const DAVET_EPOSTA = "oguzhansarigol1@gmail.com";
+export const DAVET_DISCORD = "ogzhnsrgl";
+
 // Sosyal medya hesapları (yeni hesap açılınca buraya ekleyin,
 // footer'da otomatik görünür — örn. { ad: "YouTube", url: "https://..." })
 export const SOCIALS = [

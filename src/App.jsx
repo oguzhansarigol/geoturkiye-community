@@ -12,10 +12,14 @@ import Kulupler from "./pages/Kulupler.jsx";
 import FaydaliSiteler from "./pages/FaydaliSiteler.jsx";
 import Katil from "./pages/Katil.jsx";
 import Admin from "./pages/Admin.jsx";
+import Davet from "./pages/Davet.jsx";
+import { DAVET_YOLU } from "./config.js";
 
 export default function App() {
   const location = useLocation();
   const { t } = useLang();
+  // Davet sayfası tam ekran sinematik: menü ve alt bilgi gizlenir
+  const davetSayfasi = location.pathname === DAVET_YOLU;
 
   useEffect(() => {
     if (location.hash) {
@@ -35,7 +39,7 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#icerik">{t.nav.skip}</a>
-      <Header />
+      {!davetSayfasi && <Header />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
@@ -45,10 +49,11 @@ export default function App() {
           <Route path="/faydali-siteler" element={<FaydaliSiteler />} />
           <Route path="/katil" element={<Katil />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path={DAVET_YOLU} element={<Davet />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </AnimatePresence>
-      <Footer />
+      {!davetSayfasi && <Footer />}
     </>
   );
 }
