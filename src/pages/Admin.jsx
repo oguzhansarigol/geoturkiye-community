@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Page from "../components/Page.jsx";
 import Btn from "../components/Btn.jsx";
 import BasvuruTablosu from "../components/BasvuruTablosu.jsx";
+import KuraYonetimi from "../components/KuraYonetimi.jsx";
 import { supabase } from "../supabase.js";
 
 // ============================================================
@@ -11,8 +12,9 @@ import { supabase } from "../supabase.js";
 // ============================================================
 
 const DURUM_ETIKET = { taslak: "Taslak", acik: "Açık", kapali: "Kapalı" };
+const KATILIM_ETIKET = { basvuru: "Başvurulu (siteden başvuru alınır)", davetli: "Davetli (başvuru alınmaz)" };
 
-const BOS_TURNUVA = { ad: "", aciklama: "", format: "", tarih: "", max_katilimci: "", durum: "taslak" };
+const BOS_TURNUVA = { ad: "", aciklama: "", format: "", tarih: "", max_katilimci: "", durum: "taslak", katilim: "basvuru" };
 
 function Giris({ onGiris }) {
   const [eposta, setEposta] = useState("");
@@ -69,6 +71,7 @@ function TurnuvaFormu({ kayit, onKaydet, onIptal }) {
       tarih: form.tarih.trim(),
       max_katilimci: form.max_katilimci === "" || form.max_katilimci === null ? null : Number(form.max_katilimci),
       durum: form.durum,
+      katilim: form.katilim || "basvuru",
     };
     const sorgu = form.id
       ? supabase.from("turnuvalar").update(veri).eq("id", form.id)
@@ -102,6 +105,12 @@ function TurnuvaFormu({ kayit, onKaydet, onIptal }) {
           <span>Durum</span>
           <select value={form.durum} onChange={alan("durum")}>
             {Object.entries(DURUM_ETIKET).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>Katılım</span>
+          <select value={form.katilim || "basvuru"} onChange={alan("katilim")}>
+            {Object.entries(KATILIM_ETIKET).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </label>
         <label className="t-form-genis">
@@ -192,6 +201,7 @@ function Panel({ onCikis }) {
   const [turnuvalar, setTurnuvalar] = useState(null);
   const [duzenlenen, setDuzenlenen] = useState(null); // null | "yeni" | turnuva kaydı
   const [acikBasvuru, setAcikBasvuru] = useState(null); // başvuruları gösterilen turnuva id
+  const [acikKura, setAcikKura] = useState(null); // kura/ağaç paneli açık turnuva id
 
   async function yukle() {
     const { data } = await supabase
@@ -262,9 +272,12 @@ function Panel({ onCikis }) {
                 <h3 className="t-kart-ad">{t.ad}</h3>
                 <p className="t-kart-meta">
                   <span className={`tag turnuva-${t.durum}`}>{DURUM_ETIKET[t.durum]}</span>
+                  {t.katilim === "davetli" && <span className="tag">Davetli</span>}
                   {t.format && <span className="tag">{t.format}</span>}
                   {t.tarih && <span className="t-day">{t.tarih}</span>}
-                  <span className="t-day">Kontenjan: {t.max_katilimci ?? "Sınırsız"}</span>
+                  {t.katilim !== "davetli" && (
+                    <span className="t-day">Kontenjan: {t.max_katilimci ?? "Sınırsız"}</span>
+                  )}
                 </p>
               </div>
               <div className="admin-satir">
@@ -275,10 +288,17 @@ function Panel({ onCikis }) {
                 >
                   {acikBasvuru === t.id ? "Başvuruları Gizle" : "Başvurular"}
                 </button>
+                <button
+                  className={`admin-mini${acikKura === t.id ? " aktif" : ""}`}
+                  onClick={() => setAcikKura(acikKura === t.id ? null : t.id)}
+                >
+                  {acikKura === t.id ? "Kurayı Gizle" : "Kura & Ağaç"}
+                </button>
                 <button className="admin-mini red" onClick={() => turnuvaSil(t)}>Sil</button>
               </div>
             </div>
             {acikBasvuru === t.id && <Basvurular turnuva={t} />}
+            {acikKura === t.id && <KuraYonetimi turnuva={t} />}
           </div>
         )
       )}

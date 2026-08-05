@@ -13,6 +13,7 @@ create table if not exists public.turnuvalar (
   tarih          text not null default '' check (char_length(tarih) <= 80),    -- örn. "12.09.2026 21:00"
   max_katilimci  integer check (max_katilimci is null or max_katilimci > 0),
   durum          text not null default 'taslak' check (durum in ('taslak', 'acik', 'kapali')),
+  katilim        text not null default 'basvuru' check (katilim in ('basvuru', 'davetli')),  -- davetli: başvuru alınmaz
   created_at     timestamptz not null default now()
 );
 
@@ -43,6 +44,7 @@ as $$
   -- Kontenjan belirtilmemiş turnuvalarda bile mutlak tavan 10000 kayıttır
   -- (toplu sahte başvuru koruması).
   select t.durum = 'acik'
+     and t.katilim = 'basvuru'
      and (select count(*) from basvurular b where b.turnuva_id = tid)
          < least(coalesce(t.max_katilimci, 10000), 10000)
   from turnuvalar t

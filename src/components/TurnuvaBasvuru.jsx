@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import Reveal from "./Reveal.jsx";
 import Btn from "./Btn.jsx";
 import { supabase } from "../supabase.js";
-import { DISCORD_URL } from "../config.js";
+import { DISCORD_URL, TURNUVA_YAYIN_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
+// Sayfadaki turnuva ağacı bölümüne yumuşak kaydırma
+function agacaKaydir() {
+  document.getElementById("turnuva-agaci")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 // Tek bir turnuva kartı + açılır başvuru formu
-function TurnuvaKart({ turnuva, sayi }) {
+function TurnuvaKart({ turnuva, sayi, agacVar }) {
   const { t } = useLang();
   const s = t.etkinlikler;
   const [acik, setAcik] = useState(false);
@@ -14,7 +19,8 @@ function TurnuvaKart({ turnuva, sayi }) {
   const [durum, setDurum] = useState("bos"); // bos | gonderiliyor | basarili
   const [hata, setHata] = useState("");
 
-  const dolu = turnuva.max_katilimci != null && sayi != null && sayi >= turnuva.max_katilimci;
+  const davetli = turnuva.katilim === "davetli";
+  const dolu = !davetli && turnuva.max_katilimci != null && sayi != null && sayi >= turnuva.max_katilimci;
 
   function guncelle(alan) {
     return (e) => setForm((f) => ({ ...f, [alan]: e.target.value }));
@@ -48,21 +54,33 @@ function TurnuvaKart({ turnuva, sayi }) {
         <div>
           <h3 className="t-kart-ad">{turnuva.ad}</h3>
           <p className="t-kart-meta">
+            {davetli && <span className="tag t-davetli">{s.tDavetli}</span>}
             {turnuva.format && <span className="tag">{turnuva.format}</span>}
             {turnuva.tarih && <span className="t-day">{turnuva.tarih}</span>}
-            <span className="t-day">
-              {s.tKontenjan}:{" "}
-              {sayi != null ? `${sayi}${turnuva.max_katilimci ? " / " + turnuva.max_katilimci : ""}` : "—"}
-            </span>
+            {!davetli && (
+              <span className="t-day">
+                {s.tKontenjan}:{" "}
+                {sayi != null ? `${sayi}${turnuva.max_katilimci ? " / " + turnuva.max_katilimci : ""}` : "—"}
+              </span>
+            )}
           </p>
         </div>
-        {durum !== "basarili" && (
-          dolu ? (
-            <span className="tag t-dolu">{s.tDolu}</span>
-          ) : (
-            <Btn kind={acik ? "ghost" : "red"} onClick={() => setAcik(!acik)}>
-              {acik ? s.tVazgec : s.tBasvurBtn}
-            </Btn>
+        {davetli ? (
+          <div className="admin-satir">
+            {agacVar && (
+              <Btn kind="ink" arrow="↓" onClick={agacaKaydir}>{s.tAgacBtn}</Btn>
+            )}
+            <Btn href={TURNUVA_YAYIN_URL} kind="red" arrow="↗">{s.tIzleBtn}</Btn>
+          </div>
+        ) : (
+          durum !== "basarili" && (
+            dolu ? (
+              <span className="tag t-dolu">{s.tDolu}</span>
+            ) : (
+              <Btn kind={acik ? "ghost" : "red"} onClick={() => setAcik(!acik)}>
+                {acik ? s.tVazgec : s.tBasvurBtn}
+              </Btn>
+            )
           )
         )}
       </div>
@@ -123,6 +141,7 @@ export default function TurnuvaBasvuru({ onDurum }) {
   const s = t.etkinlikler;
   const [turnuvalar, setTurnuvalar] = useState(null); // null = yükleniyor
   const [sayilar, setSayilar] = useState({});
+  const [agacIdleri, setAgacIdleri] = useState([]); // yayındaki turnuva ağaçları
 
   useEffect(() => {
     if (!supabase) {
@@ -134,16 +153,20 @@ export default function TurnuvaBasvuru({ onDurum }) {
     (async () => {
       const { data, error } = await supabase
         .from("turnuvalar")
-        .select("id, ad, aciklama, format, tarih, max_katilimci, durum")
+        .select("id, ad, aciklama, format, tarih, max_katilimci, durum, katilim")
         .eq("durum", "acik")
         .order("created_at", { ascending: false });
       if (iptal) return;
       const liste = error ? [] : data;
       setTurnuvalar(liste);
       onDurum?.(liste.length ? "var" : "yok");
-      // Başvuru sayıları (sadece sayı döner, içerik dönmez)
+      // Yayında ağacı olan turnuvalar ("Turnuva Ağacını Görüntüle" butonu için;
+      // RLS gereği zaten sadece yayındakiler döner)
+      const { data: agaclar } = await supabase.from("turnuva_agaclari").select("turnuva_id");
+      if (!iptal) setAgacIdleri((agaclar || []).map((a) => a.turnuva_id));
+      // Başvuru sayıları (sadece sayı döner, içerik dönmez; davetlilerde gerekmez)
       const ciftler = await Promise.all(
-        liste.map(async (tr) => {
+        liste.filter((tr) => tr.katilim !== "davetli").map(async (tr) => {
           const { data: n } = await supabase.rpc("basvuru_sayisi", { tid: tr.id });
           return [tr.id, typeof n === "number" ? n : null];
         })
@@ -155,16 +178,19 @@ export default function TurnuvaBasvuru({ onDurum }) {
 
   if (!turnuvalar || turnuvalar.length === 0) return null;
 
+  // Hepsi davetliyse "Başvuru / Açık turnuvalar" yerine genel başlık
+  const hepsiDavetli = turnuvalar.every((tr) => tr.katilim === "davetli");
+
   return (
     <section className="section" style={{ paddingTop: 0 }}>
       <div className="container">
         <Reveal className="section-head">
-          <p className="eyebrow">{s.turnuvaEyebrow}</p>
-          <h2>{s.turnuvaH2}</h2>
+          <p className="eyebrow">{hepsiDavetli ? s.turnuvaEyebrowDavetli : s.turnuvaEyebrow}</p>
+          <h2>{hepsiDavetli ? s.turnuvaH2Davetli : s.turnuvaH2}</h2>
         </Reveal>
         {turnuvalar.map((tr, i) => (
           <Reveal key={tr.id} delay={i * 0.05}>
-            <TurnuvaKart turnuva={tr} sayi={sayilar[tr.id]} />
+            <TurnuvaKart turnuva={tr} sayi={sayilar[tr.id]} agacVar={agacIdleri.includes(tr.id)} />
           </Reveal>
         ))}
       </div>

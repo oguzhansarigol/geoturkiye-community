@@ -1230,6 +1230,7 @@ html[data-theme="dark"] .cta-note { color: var(--dark-soft); }
 .t-kart-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .t-kart-aciklama { margin-top: 14px; color: var(--ink-2); max-width: 70ch; }
 .t-dolu { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: var(--red); }
+.t-davetli { border-color: color-mix(in srgb, var(--ink) 45%, transparent); font-weight: 600; }
 
 .t-form { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 22px; }
 .t-form-grid {
@@ -1357,6 +1358,126 @@ html[data-theme="dark"] .cta-note { color: var(--dark-soft); }
 .geo-alt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .geo-alt .t-day { font-size: 12px; font-weight: 500; }
 .admin-islemler { display: flex; gap: 6px; flex-wrap: nowrap; justify-content: flex-end; }
+
+/* ---------- Turnuva ağacı (32 kişilik, 4 torbalı kura) ---------- */
+.agac-kart {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  margin-bottom: 18px;
+}
+.agac-kart-ust {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.agac-scroll { overflow-x: auto; padding-bottom: 10px; }
+.agac { display: flex; min-width: 1120px; align-items: stretch; }
+.agac-tur { flex: 1; min-width: 150px; display: flex; flex-direction: column; }
+.agac-tur + .agac-tur { margin-left: 28px; }
+.agac-tur-ad {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+  text-align: center; margin-bottom: 12px;
+}
+/* Sütun eşit yükseklikte slotlara bölünür; maç, slotun dikey ortasında
+   durur. Böylece bağlantı çizgileri her turda tam hizalanır. */
+.agac-kolon { flex: 1; display: flex; flex-direction: column; }
+.agac-cift { flex: 1; position: relative; display: flex; flex-direction: column; }
+.agac-slot {
+  flex: 1; position: relative; display: flex;
+  flex-direction: column; justify-content: center; padding: 3px 0;
+}
+/* Bağlantı çizgileri: maçtan sağa çıkan kol + ikiliyi birleştiren dikey
+   çizgi + sonraki turun maçına soldan giren kol (28px sütun boşluğu
+   14px + 14px olarak ikiye bölünür, dikey çizgi tam ortadan geçer). */
+.agac-tur:not(.agac-tur--sampiyon) .agac-slot::after {
+  content: ""; position: absolute; left: 100%; top: 50%;
+  width: 14px; height: 1px; background: var(--line);
+}
+.agac-tur:not(.agac-tur--ilk) .agac-slot::before {
+  content: ""; position: absolute; right: 100%; top: 50%;
+  width: 14px; height: 1px; background: var(--line);
+}
+.agac-cift:not(.agac-cift--tek)::after {
+  content: ""; position: absolute; left: calc(100% + 14px);
+  top: 25%; bottom: 25%; width: 1px; background: var(--line);
+}
+.agac-mac {
+  position: relative; z-index: 1;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  overflow: hidden;
+}
+.agac-tur--final .agac-mac { border-color: color-mix(in srgb, var(--red) 55%, var(--line)); }
+.agac-oyuncu {
+  display: block; width: 100%; text-align: left;
+  padding: 5px 10px; font-size: 13.5px; line-height: 1.4;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: default;
+}
+.agac-oyuncu + .agac-oyuncu { border-top: 1px dashed var(--line); }
+.agac-oyuncu.secilebilir:not(:disabled) { cursor: pointer; }
+.agac-oyuncu.secilebilir:not(:disabled):hover { background: var(--paper-2); }
+.agac-oyuncu.kazanan {
+  font-weight: 700;
+  background: color-mix(in srgb, #1d7a3d 10%, var(--paper));
+  box-shadow: inset 3px 0 0 #1d7a3d;
+}
+.agac-oyuncu.kaybeden { color: var(--ink-2); opacity: 0.55; }
+.agac-tur--sampiyon { min-width: 160px; }
+.agac-sampiyon {
+  position: relative; z-index: 1;
+  border: 2px solid var(--red);
+  border-radius: var(--radius);
+  padding: 12px 14px; text-align: center;
+  font-weight: 700; font-size: 15px;
+  background: color-mix(in srgb, var(--red) 6%, var(--paper));
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.agac-sampiyon.bos {
+  border-color: var(--line); background: transparent;
+  color: var(--ink-2); font-weight: 400;
+}
+/* Kura animasyonu: yeni çekilen bölgenin oyuncuları torba sırasıyla
+   kayarak belirir, kısa bir kırmızı vurgudan sonra normale döner. */
+@keyframes agac-oyuncu-gel {
+  0%   { opacity: 0; transform: translateX(-10px); }
+  40%  { opacity: 1; transform: none; background-color: color-mix(in srgb, var(--red) 16%, var(--paper)); }
+  100% { opacity: 1; transform: none; background-color: transparent; }
+}
+.agac-oyuncu--yeni { opacity: 0; animation: agac-oyuncu-gel 1s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .agac-oyuncu--yeni { animation: none; opacity: 1; }
+}
+html[data-theme="dark"] .agac-kart,
+html[data-theme="dark"] .agac-mac { background: var(--paper-2); }
+
+/* Admin: kura yönetim paneli */
+.kura-panel { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 22px; }
+.kura-baslik {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; margin: 22px 0 8px;
+}
+.kura-baslik:first-child { margin-top: 0; }
+.kura-baslik h4 { font-size: 17px; }
+.kura-torbalar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px; margin-top: 12px; margin-bottom: 8px;
+}
+.kura-torba { display: flex; flex-direction: column; gap: 6px; }
+.kura-torba span {
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
+}
+.kura-torba textarea {
+  font-family: var(--font-mono); font-size: 14px; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 12px; resize: vertical;
+}
+.kura-torba textarea:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
+.kura-torba textarea:disabled { opacity: 0.6; }
 
 /* Dikey form düzeni (kulüp başvurusu) */
 .t-form-dikey .t-form-grid { grid-template-columns: 1fr; max-width: 520px; }

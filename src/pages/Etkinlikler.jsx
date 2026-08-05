@@ -3,6 +3,7 @@ import Reveal from "../components/Reveal.jsx";
 import Btn from "../components/Btn.jsx";
 import CtaBand from "../components/CtaBand.jsx";
 import TurnuvaBasvuru from "../components/TurnuvaBasvuru.jsx";
+import TurnuvaAgaci from "../components/TurnuvaAgaci.jsx";
 import { DISCORD_URL, GUNLUK_CHALLENGE_URL } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
@@ -23,6 +24,9 @@ export default function Etkinlikler() {
 
       {/* Açık turnuvalar + başvuru formu (Supabase) */}
       <TurnuvaBasvuru />
+
+      {/* Yayındaki turnuva ağaçları (Supabase) */}
+      <TurnuvaAgaci />
 
       {/* Geçmiş turnuvalar */}
       <section className="section" style={{ paddingTop: "clamp(28px, 5vh, 48px)" }}>
