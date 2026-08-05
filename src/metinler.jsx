@@ -40,6 +40,13 @@ export const METIN = {
     },
     varsayilanAciklama: "GeoGuessr Türkiye; ilk kurulan ve en büyük Türk GeoGuessr topluluğudur. Turnuvaları, kulüpleri ve Türkçe rehberleriyle Türkiye'nin GeoGuessr oyuncularını aynı haritada buluşturan bağımsız topluluk. Katılım açık ve ücretsiz.",
     home: {
+      // Sayfanın en üstündeki turnuva duyuru barı
+      bar: {
+        baslik: "2026 Büyük GeoGuessr Turnuvası",
+        izle: "Canlı İzle",
+        agac: "Turnuva Ağacı",
+        sponsor: "Sponsorluk Başvurusu",
+      },
       eyebrow: "Türkiye'nin GeoGuessr Topluluğu",
       h1: [
         { w: "Dünyayı" },
@@ -341,6 +348,13 @@ export const METIN = {
     },
     varsayilanAciklama: "GeoGuessr Türkiye is the first and largest Turkish GeoGuessr community and one of the largest in the world, bringing Türkiye's players together through tournaments, clubs and Turkish guides. Joining is open and free.",
     home: {
+      // Tournament announcement bar at the very top of the page
+      bar: {
+        baslik: "2026 Grand GeoGuessr Tournament",
+        izle: "Watch Live",
+        agac: "Tournament Bracket",
+        sponsor: "Sponsorship Inquiry",
+      },
       eyebrow: "Türkiye's GeoGuessr Community",
       h1: [
         { w: "A community that knows" },

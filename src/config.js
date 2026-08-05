@@ -20,6 +20,9 @@ export const DAVET_YOLU = "/davet/nm-2026";
 export const DAVET_EPOSTA = "oguzhansarigol1@gmail.com";
 export const DAVET_DISCORD = "ogzhnsrgl";
 
+// Sponsorluk başvurularının yönlendirileceği e-posta
+export const SPONSOR_EPOSTA = "oguzhansarigol1@gmail.com";
+
 // Sosyal medya hesapları (yeni hesap açılınca buraya ekleyin,
 // footer'da otomatik görünür — örn. { ad: "YouTube", url: "https://..." })
 export const SOCIALS = [

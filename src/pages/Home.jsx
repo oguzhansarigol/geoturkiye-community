@@ -9,9 +9,15 @@ import LiveMap from "../components/LiveMap.jsx";
 import CountUp from "../components/CountUp.jsx";
 import CtaBand from "../components/CtaBand.jsx";
 import AnimatedTopo from "../components/AnimatedTopo.jsx";
-import { DISCORD_URL } from "../config.js";
+import { DISCORD_URL, TURNUVA_YAYIN_URL, SPONSOR_EPOSTA } from "../config.js";
 import { NOANIM } from "../anim.js";
 import { useLang } from "../i18n.jsx";
+
+// Turnuva barındaki minik ışıltılar: [sol %, üst %, boyut px, gecikme s]
+const BAR_ISILTILAR = [
+  [6, 30, 2.5, 0], [18, 68, 2, 1.6], [31, 22, 2, 2.8], [44, 74, 2.5, 0.9],
+  [57, 30, 2, 2.2], [70, 64, 2.5, 3.4], [83, 26, 2, 1.2], [94, 58, 2.5, 2.6],
+];
 
 const wordAnim = (i) => ({
   initial: NOANIM ? false : { opacity: 0, y: 34 },
@@ -31,6 +37,39 @@ export default function Home() {
 
   return (
     <Page>
+      {/* ============ TURNUVA BARI ============ */}
+      <section className="turnuva-bar">
+        {/* Gradyen üzerine ince eş yükselti eğrileri (ortadaki kesikli çizgi akar) */}
+        <svg className="turnuva-bar-topo" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true">
+          <path vectorEffect="non-scaling-stroke" d="M0 6 C 200 14, 420 -2, 620 10 S 980 16, 1200 4" />
+          <path vectorEffect="non-scaling-stroke" d="M0 18 C 120 8, 240 30, 380 22 S 640 6, 800 20 S 1080 34, 1200 16" />
+          <path vectorEffect="non-scaling-stroke" className="akis" d="M0 34 C 150 24, 300 46, 460 36 S 720 22, 900 38 S 1100 48, 1200 32" />
+          <path vectorEffect="non-scaling-stroke" d="M0 50 C 130 40, 280 58, 430 48 S 700 38, 860 52 S 1090 58, 1200 46" />
+        </svg>
+        {/* Yanıp sönen minik ışıltılar */}
+        <div className="turnuva-bar-isiltilar" aria-hidden="true">
+          {BAR_ISILTILAR.map(([x, y, boyut, gecikme], i) => (
+            <span
+              key={i}
+              className="turnuva-bar-isilti"
+              style={{ left: `${x}%`, top: `${y}%`, width: boyut, height: boyut, animationDelay: `${gecikme}s` }}
+            />
+          ))}
+        </div>
+        <div className="container turnuva-bar-ic">
+          <p className="turnuva-bar-baslik">{s.bar.baslik}</p>
+          <div className="turnuva-bar-linkler">
+            <a href={TURNUVA_YAYIN_URL} target="_blank" rel="noopener">
+              <span className="turnuva-bar-nokta" aria-hidden="true" /> {s.bar.izle}
+            </a>
+            <Link to="/etkinlikler#turnuva-agaci">{s.bar.agac}</Link>
+            <a href={`mailto:${SPONSOR_EPOSTA}?subject=${encodeURIComponent(s.bar.baslik + " — " + s.bar.sponsor)}`}>
+              {s.bar.sponsor}
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ============ HERO ============ */}
       <section className="hero">
         <AnimatedTopo />
