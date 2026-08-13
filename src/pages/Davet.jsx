@@ -272,7 +272,7 @@ export default function Davet() {
                 aria-hidden="true"
               />
             ))}
-            <p className="davet-kart-ust">29 Ağustos 2026</p>
+            <p className="davet-kart-ust">29 Ağustos 2026 · 19.00</p>
             <h1>GeoGuessr Türkiye Topluluk Turnuvası</h1>
             <p className="davet-kart-metin">turnuvasına davetlisiniz.</p>
           </div>
@@ -299,7 +299,7 @@ export default function Davet() {
             Harita:{" "}
             <a href={HARITA_URL} target="_blank" rel="noopener">An Arbitrary World ↗</a>
           </p>
-          <p>Turnuva akşam saatlerinde olacaktır, kesin saati duyurulacaktır.</p>
+          <p>Turnuva akşam saat 19.00'da başlayacaktır.</p>
         </div>
 
         {/* Turnuva künyesi */}
