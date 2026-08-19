@@ -18,12 +18,16 @@ export function turnuvaYolu(agac, canli = false) {
   return `/turnuva/${agac.slug || agac.turnuva_id}${canli ? "/canli" : ""}`;
 }
 
-// Ağaçtaki oyuncu adları: torbalar doluysa torba sırasıyla (1 → 4),
-// değilse kura bölgelerinden; her ad bir kez geçer.
+// Oyuncu adları: önce torbalar (torba sırasıyla 1 → 4), sonra kura
+// bölgeleri, en son profil listesindeki (oyuncular) adlar — böylece
+// torbalar henüz yazılmamışken de profil listesi sayfada görünür.
+// Her ad bir kez geçer.
 export function oyuncuAdlari(agac) {
-  const torbalardan = (agac.torbalar || []).flat().filter(Boolean);
-  const kaynak = torbalardan.length ? torbalardan : (agac.bolgeler || []).flat().filter(Boolean);
-  return [...new Set(kaynak)];
+  return [...new Set([
+    ...(agac.torbalar || []).flat(),
+    ...(agac.bolgeler || []).flat(),
+    ...Object.keys(agac.oyuncular || {}),
+  ].filter(Boolean))];
 }
 
 // YouTube linkini gömülebilir adrese çevirir; çevrilemezse null.

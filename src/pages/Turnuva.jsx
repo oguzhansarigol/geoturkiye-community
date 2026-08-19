@@ -4,7 +4,7 @@ import Page from "../components/Page.jsx";
 import Reveal from "../components/Reveal.jsx";
 import Btn from "../components/Btn.jsx";
 import AgacGorunum from "../components/AgacGorunum.jsx";
-import { MacSeridi, OyuncuDetay, OyuncuKart, TurnuvaGeri, oyuncuDurumlari } from "../components/TurnuvaOyuncular.jsx";
+import { OyuncuDetay, OyuncuKart, TurnuvaGeri, oyuncuDurumlari } from "../components/TurnuvaOyuncular.jsx";
 import { useTurnuvaSayfasi, turnuvaYolu } from "../turnuvaSayfa.js";
 import { guncelTur, TUR_SIRASI } from "../turnuvaAgaci.js";
 import { DISCORD_URL } from "../config.js";
@@ -90,40 +90,20 @@ export default function Turnuva() {
         </div>
       </section>
 
-      {/* ---- Güncel eşleşmeler ---- */}
-      <section className="section" style={{ paddingTop: "clamp(28px, 5vh, 48px)", paddingBottom: 0 }}>
-        <div className="container">
-          <Reveal className="agac-kart turnuva-guncel">
-            <div className="agac-kart-ust">
-              <div>
-                <p className="eyebrow">{s.guncelEyebrow}</p>
-                <h3 className="t-kart-ad" style={{ marginTop: 10 }}>
-                  {tur ? turAdlari[TUR_SIRASI.indexOf(tur)] : sampiyon ? s.tamamlandi : s.guncelBaslik}
-                </h3>
-              </div>
-              {sampiyon && (
-                <p className="turnuva-sampiyon-satir">
-                  <span className="tag turnuva-acik">★ {s.sampiyon}</span> <b>{sampiyon}</b>
-                </p>
-              )}
-            </div>
-            {!kuraCekildi ? (
-              <p className="t-day">{s.kuraBekleniyor}</p>
-            ) : tur ? (
-              <MacSeridi maclar={turlar[tur]} avatarlar={avatarlar} s={s} onOyuncu={ac} />
-            ) : null}
-          </Reveal>
-        </div>
-      </section>
-
       {/* ---- Ağaç ---- */}
       <section className="section" id="agac" style={{ paddingTop: "clamp(28px, 5vh, 48px)", paddingBottom: 0, scrollMarginTop: "90px" }}>
         <div className="container">
           <Reveal>
             <div className="agac-kart">
               <div className="agac-kart-ust">
-                <h3 className="t-kart-ad">{s.agacH2}</h3>
-                <p className="t-day">{s.agacNot}</p>
+                <div>
+                  <h3 className="t-kart-ad">{s.agacH2}</h3>
+                  <p className="t-kart-meta">
+                    {tur && <span className="tag">{turAdlari[TUR_SIRASI.indexOf(tur)]}</span>}
+                    {sampiyon && <span className="tag turnuva-acik">★ {s.sampiyon}: {sampiyon}</span>}
+                    <span className="t-day">{kuraCekildi ? s.agacNot : s.kuraBekleniyor}</span>
+                  </p>
+                </div>
               </div>
               <AgacGorunum
                 bolgeler={agac.bolgeler}

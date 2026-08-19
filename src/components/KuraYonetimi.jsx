@@ -3,10 +3,12 @@ import Btn from "./Btn.jsx";
 import AgacGorunum from "./AgacGorunum.jsx";
 import { supabase } from "../supabase.js";
 import { kalanOyuncular, BOLGE_SAYISI, TORBA_BOYU } from "../turnuvaAgaci.js";
+import { useGeoProfiller } from "../geoProfil.js";
 
 // ============================================================
 // Admin: 32 kişilik turnuva için 4 torbalı kura + ağaç yönetimi.
-// - 4 torbaya 8'er oyuncu yazılır (her satıra bir ad).
+// - Önce oyuncu profilleri (ad + GeoGuessr linki) kaydedilir; torbalar
+//   bu listeden seçilerek doldurulur (gerekirse elle ad da eklenebilir).
 // - "Kura Çek" her basışta 4 torbadan rastgele birer oyuncu seçip
 //   sıradaki bölgeye koyar (8 basışta ağaç tamamlanır).
 // - Ağaçta oyuncuya tıklayarak maçın kazananı işaretlenir.
@@ -42,13 +44,16 @@ function profilleriMetneCevir(oyuncular) {
 
 export default function KuraYonetimi({ turnuva }) {
   const [kayit, setKayit] = useState(undefined); // undefined = yükleniyor
-  const [metinler, setMetinler] = useState(["", "", "", ""]);
+  const [torbaListe, setTorbaListe] = useState([[], [], [], []]); // düzenlenen torbalar (kaydedilmemiş olabilir)
+  const [elleAd, setElleAd] = useState(["", "", "", ""]);
   const [hata, setHata] = useState("");
   const [bekliyor, setBekliyor] = useState(false);
   const [sonBolge, setSonBolge] = useState(null); // animasyon: son çekilen bölge indeksi
   const [profilMetni, setProfilMetni] = useState("");
   const [yayinUrl, setYayinUrl] = useState("");
   const [slug, setSlug] = useState("");
+  // Çiplerdeki avatarlar için profil verisi (ortak önbellek)
+  const profiller = useGeoProfiller(Object.values(kayit?.oyuncular || {}));
 
   // Kayıt yoksa varsayılan satırı oluştur (yayinda=false ile başlar)
   useEffect(() => {
@@ -96,20 +101,21 @@ export default function KuraYonetimi({ turnuva }) {
     return data;
   }
 
+  function torbayaEkle(p, ad) {
+    const temiz = (ad || "").trim();
+    if (!temiz) return;
+    setHata("");
+    if (torbaListe.some((t) => t.includes(temiz))) { setHata(`"${temiz}" zaten bir torbada.`); return; }
+    if (torbaListe[p].length >= TORBA_BOYU) { setHata(`${TORBA_BASLIK[p]} dolu (${TORBA_BOYU} oyuncu).`); return; }
+    setTorbaListe((l) => l.map((t, i) => (i === p ? [...t, temiz] : t)));
+  }
+
+  function torbadanCikar(p, ad) {
+    setTorbaListe((l) => l.map((t, i) => (i === p ? t.filter((a) => a !== ad) : t)));
+  }
+
   function torbalariKaydet() {
-    const torbalar = metinler.map(satirlaraBol);
-    const hepsi = torbalar.flat();
-    const tekrarlar = hepsi.filter((ad, i) => hepsi.indexOf(ad) !== i);
-    if (tekrarlar.length > 0) {
-      setHata("Aynı ad birden fazla kez yazılmış: " + [...new Set(tekrarlar)].join(", "));
-      return;
-    }
-    const eksik = torbalar.findIndex((t) => t.length !== TORBA_BOYU);
-    if (eksik !== -1 && torbalar[eksik].length > TORBA_BOYU) {
-      setHata(`${TORBA_BASLIK[eksik]} en fazla ${TORBA_BOYU} oyuncu alır (${torbalar[eksik].length} yazılmış).`);
-      return;
-    }
-    guncelle({ torbalar });
+    guncelle({ torbalar: torbaListe });
   }
 
   async function kuraCek(adet) {
@@ -171,40 +177,15 @@ export default function KuraYonetimi({ turnuva }) {
   // Profil eşleşmesi: torbadaki adlardan kaçının linki var
   const torbaAdlari = kayit.torbalar.flat();
   const kayitliProfiller = kayit.oyuncular || {};
+  const torbadakiler = torbaListe.flat();
+  const secilebilir = Object.keys(kayitliProfiller).filter((ad) => !torbadakiler.includes(ad));
+  const torbalarDegisti = JSON.stringify(torbaListe) !== JSON.stringify(kayit.torbalar);
   const profilsiz = torbaAdlari.filter((ad) => !kayitliProfiller[ad]);
   const fazlaProfil = Object.keys(kayitliProfiller).filter((ad) => torbaAdlari.length && !torbaAdlari.includes(ad));
   const sayfaYolu = `/turnuva/${kayit.slug || kayit.turnuva_id}`;
 
   return (
     <div className="kura-panel">
-      {/* ---- Torbalar ---- */}
-      <div className="kura-baslik">
-        <h4>Torbalar</h4>
-        {!kuraBasladi && (
-          <Btn kind="ink" onClick={torbalariKaydet} disabled={bekliyor}>
-            {bekliyor ? "Kaydediliyor…" : "Torbaları Kaydet"}
-          </Btn>
-        )}
-      </div>
-      {kuraBasladi ? (
-        <p className="t-day">Kura başladığı için torbalar kilitli. Düzenlemek için önce kurayı sıfırlayın.</p>
-      ) : (
-        <p className="t-day">Her torbaya güç sıralamasına göre 8 oyuncu yazın — her satıra bir ad.</p>
-      )}
-      <div className="kura-torbalar">
-        {TORBA_BASLIK.map((baslik, p) => (
-          <label key={baslik} className="kura-torba">
-            <span>{baslik} — {satirlaraBol(metinler[p]).length}/{TORBA_BOYU}</span>
-            <textarea
-              rows={8}
-              value={metinler[p]}
-              disabled={kuraBasladi}
-              onChange={(e) => setMetinler((m) => m.map((v, i) => (i === p ? e.target.value : v)))}
-            />
-          </label>
-        ))}
-      </div>
-
       {/* ---- Oyuncu profilleri (avatar / ülke / lig için) ---- */}
       <div className="kura-baslik">
         <h4>Oyuncu Profilleri</h4>
@@ -234,6 +215,76 @@ export default function KuraYonetimi({ turnuva }) {
       {fazlaProfil.length > 0 && (
         <p className="t-day">Torbalarda olmayan adlar (yazım farkı olabilir): {fazlaProfil.join(", ")}</p>
       )}
+
+      {/* ---- Torbalar (profil listesinden seçerek) ---- */}
+      <div className="kura-baslik">
+        <h4>Torbalar</h4>
+        {!kuraBasladi && (
+          <Btn kind="ink" onClick={torbalariKaydet} disabled={bekliyor || !torbalarDegisti}>
+            {bekliyor ? "Kaydediliyor…" : torbalarDegisti ? "Torbaları Kaydet" : "Torbalar Kayıtlı"}
+          </Btn>
+        )}
+      </div>
+      {kuraBasladi ? (
+        <p className="t-day">Kura başladığı için torbalar kilitli. Düzenlemek için önce kurayı sıfırlayın.</p>
+      ) : (
+        <p className="t-day">
+          Her torbaya güç sıralamasına göre 8 oyuncu seçin. Liste, aşağıda kaydettiğiniz oyuncu profillerinden gelir;
+          listede olmayan birini eklemek için adını yazıp Enter'a basın.
+          {torbalarDegisti && <b> Değişiklikler henüz kaydedilmedi.</b>}
+        </p>
+      )}
+      <div className="kura-torbalar">
+        {TORBA_BASLIK.map((baslik, p) => (
+          <div key={baslik} className="kura-torba">
+            <span>{baslik} — {torbaListe[p].length}/{TORBA_BOYU}</span>
+            <ul className="kura-cipler">
+              {torbaListe[p].map((ad) => (
+                <li key={ad} className="kura-cip">
+                  <span className="kura-cip-avatar" aria-hidden="true">
+                    {profiller[kayitliProfiller[ad]]?.avatar
+                      ? <img src={profiller[kayitliProfiller[ad]].avatar} alt="" />
+                      : ad[0]}
+                  </span>
+                  <span className="kura-cip-ad" title={ad}>{ad}</span>
+                  {!kayitliProfiller[ad] && <span className="kura-cip-uyari" title="Profil linki yok">!</span>}
+                  {!kuraBasladi && (
+                    <button type="button" className="kura-cip-sil" onClick={() => torbadanCikar(p, ad)} aria-label={`${ad} çıkar`}>×</button>
+                  )}
+                </li>
+              ))}
+              {torbaListe[p].length === 0 && <li className="t-day">Boş</li>}
+            </ul>
+            {!kuraBasladi && torbaListe[p].length < TORBA_BOYU && (
+              <div className="kura-ekle">
+                <select
+                  className="kura-girdi"
+                  value=""
+                  onChange={(e) => torbayaEkle(p, e.target.value)}
+                  disabled={secilebilir.length === 0}
+                >
+                  <option value="">{secilebilir.length ? "Listeden oyuncu ekle…" : "Listede seçilecek oyuncu kalmadı"}</option>
+                  {secilebilir.map((ad) => <option key={ad} value={ad}>{ad}</option>)}
+                </select>
+                <input
+                  className="kura-girdi"
+                  type="text"
+                  placeholder="veya ad yaz + Enter"
+                  value={elleAd[p]}
+                  onChange={(e) => setElleAd((m) => m.map((v, i) => (i === p ? e.target.value : v)))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      torbayaEkle(p, elleAd[p]);
+                      setElleAd((m) => m.map((v, i) => (i === p ? "" : v)));
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
       {/* ---- Sayfa ayarları ---- */}
       <div className="kura-baslik">

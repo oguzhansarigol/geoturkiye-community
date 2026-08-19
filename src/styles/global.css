@@ -1488,6 +1488,30 @@ html[data-theme="dark"] .agac-mac { background: var(--paper-2); }
   border-radius: var(--radius); padding: 10px 12px;
 }
 .kura-girdi:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
+/* Torba çipleri (profil listesinden seçilen oyuncular) */
+.kura-cipler {
+  list-style: none; display: flex; flex-direction: column; gap: 4px;
+  min-height: 44px; padding: 6px; border: 1px dashed var(--line); border-radius: var(--radius);
+}
+.kura-cipler > .t-day { padding: 6px 4px; }
+.kura-cip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 6px 4px 4px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--paper); font-size: 14px;
+}
+.kura-cip-avatar {
+  flex: none; width: 24px; height: 24px; border-radius: 50%; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--paper-2); font-family: var(--font-mono); font-size: 11px; color: var(--ink-2);
+}
+.kura-cip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.kura-cip-ad { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kura-cip-uyari { color: var(--red); font-weight: 700; font-family: var(--font-mono); }
+.kura-cip-sil { width: 22px; height: 22px; border-radius: 50%; color: var(--ink-2); font-size: 16px; line-height: 1; }
+.kura-cip-sil:hover { background: var(--paper-2); color: var(--red); }
+.kura-ekle { display: flex; flex-direction: column; gap: 6px; }
+.kura-ekle .kura-girdi { font-size: 13.5px; padding: 8px 10px; }
+html[data-theme="dark"] .kura-cip { background: var(--paper-2); }
 .kura-panel code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2); padding: 1px 5px; border-radius: var(--radius); }
 
 /* Dikey form düzeni (kulüp başvurusu) */
