@@ -74,7 +74,7 @@ export default function Turnuva() {
             <p className="t-kart-meta turnuva-hero-meta">
               {turnuva.format && <span className="tag">{turnuva.format}</span>}
               {turnuva.tarih && <span className="t-day">{turnuva.tarih}</span>}
-              <span className="t-day">{oyuncular.length} {s.oyuncuSayisi}</span>
+              {oyuncular.length > 0 && <span className="t-day">{oyuncular.length} {s.oyuncuSayisi}</span>}
             </p>
           </Reveal>
           {turnuva.aciklama && <Reveal delay={0.14}><p className="lead">{turnuva.aciklama}</p></Reveal>}
@@ -145,6 +145,7 @@ export default function Turnuva() {
             <p className="eyebrow">{s.oyuncularEyebrow}</p>
             <h2>{s.oyuncularH2}</h2>
           </Reveal>
+          {oyuncular.length === 0 && <Reveal><p className="t-day">{s.oyuncuYok}</p></Reveal>}
           <div className="oyuncu-izgara">
             {oyuncular.map((o, i) => (
               <Reveal key={o.ad} delay={Math.min(i * 0.03, 0.4)}>

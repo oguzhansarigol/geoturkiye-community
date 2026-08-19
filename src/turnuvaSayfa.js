@@ -48,6 +48,10 @@ export function yayinGomme(url) {
   return null;
 }
 
+// Admin panelinde yapılan değişiklikler (kura, sonuçlar) izleyiciye
+// sayfa yenilemeden ulaşsın diye bu aralıkla yeniden çekilir.
+const YENILEME_MS = 30000;
+
 // durum: "yukleniyor" | "yok" | "hazir"
 export function useTurnuvaSayfasi(kimlik) {
   const [agac, setAgac] = useState(undefined); // undefined = yükleniyor, null = yok
@@ -56,15 +60,31 @@ export function useTurnuvaSayfasi(kimlik) {
     if (!supabase || !kimlik) { setAgac(null); return; }
     let iptal = false;
     setAgac(undefined);
-    (async () => {
+
+    async function getir() {
       const sorgu = supabase.from("turnuva_agaclari").select(SECIM).eq("yayinda", true);
-      const { data } = await (UUID_RE.test(kimlik)
+      const { data, error } = await (UUID_RE.test(kimlik)
         ? sorgu.eq("turnuva_id", kimlik)
         : sorgu.eq("slug", kimlik)
       ).maybeSingle();
-      if (!iptal) setAgac(data || null);
-    })();
-    return () => { iptal = true; };
+      if (iptal || error) return;
+      // İçerik değişmediyse state'i elleme (gereksiz yeniden çizim olmasın)
+      setAgac((onceki) =>
+        onceki && data && JSON.stringify(onceki) === JSON.stringify(data) ? onceki : data || null
+      );
+    }
+
+    getir();
+    const zamanlayici = setInterval(() => {
+      if (document.visibilityState === "visible") getir();
+    }, YENILEME_MS);
+    const gorunurluk = () => { if (document.visibilityState === "visible") getir(); };
+    document.addEventListener("visibilitychange", gorunurluk);
+    return () => {
+      iptal = true;
+      clearInterval(zamanlayici);
+      document.removeEventListener("visibilitychange", gorunurluk);
+    };
   }, [kimlik]);
 
   const adlar = useMemo(() => (agac ? oyuncuAdlari(agac) : []), [agac]);

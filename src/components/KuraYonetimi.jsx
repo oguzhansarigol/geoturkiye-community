@@ -251,8 +251,7 @@ export default function KuraYonetimi({ turnuva }) {
           <Btn
             kind={kayit.yayinda ? "ghost" : "red"}
             onClick={() => guncelle({ yayinda: !kayit.yayinda })}
-            disabled={bekliyor || (!kayit.yayinda && torbaAdlari.length === 0)}
-            title={!kayit.yayinda && torbaAdlari.length === 0 ? "Önce torbaları kaydedin" : undefined}
+            disabled={bekliyor}
           >
             {kayit.yayinda ? "Yayından Kaldır" : "Yayınla"}
           </Btn>
@@ -260,14 +259,10 @@ export default function KuraYonetimi({ turnuva }) {
       </div>
       <p className="t-day">
         Yayınlandığında <code>{sayfaYolu}</code> adresinde oyuncu kartları (torbalardan), eşleşmeler, ağaç ve canlı
-        izleme sayfası (<code>{sayfaYolu}/canli</code>) herkese açılır; kura çekilmeden de yayınlanabilir — ağaç kura
-        sonrası kendiliğinden dolar.
+        izleme sayfası (<code>{sayfaYolu}/canli</code>) herkese açılır. Torbalar ve kura boşken de yayınlanabilir;
+        burada kaydettiğiniz her değişiklik (torbalar, profiller, kura, maç sonuçları) sayfaya anında yansır —
+        açık olan izleyici sayfaları 30 saniyede bir kendini yeniler.
       </p>
-      {!kayit.yayinda && torbaAdlari.length === 0 && (
-        <p className="form-hata" role="status">
-          Yayınlamak için önce yukarıdaki torbalara oyuncuları yazıp <b>Torbaları Kaydet</b>'e basın — kayıtlı oyuncu olmadan sayfa boş olur.
-        </p>
-      )}
       {hata && <p className="form-hata" role="alert">{hata}</p>}
       <div className="kura-torbalar">
         <label className="kura-torba">
