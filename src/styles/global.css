@@ -114,6 +114,7 @@ p { text-wrap: pretty; }
   border: 1px solid transparent;
   transition: background-color .18s ease, color .18s ease, border-color .18s ease;
 }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn .arr { transition: transform .18s ease; font-family: var(--font-sans); }
 .btn:hover .arr { transform: translateX(4px); }
 
