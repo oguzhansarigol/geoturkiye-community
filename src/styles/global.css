@@ -115,6 +115,7 @@ p { text-wrap: pretty; }
   transition: background-color .18s ease, color .18s ease, border-color .18s ease;
 }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn--sm { padding: 9px 14px; font-size: 12px; gap: 8px; }
 .btn .arr { transition: transform .18s ease; font-family: var(--font-sans); }
 .btn:hover .arr { transform: translateX(4px); }
 
@@ -1458,42 +1459,110 @@ html[data-theme="dark"] .agac-mac { background: var(--paper-2); }
 
 /* Admin: kura yönetim paneli */
 .kura-panel { margin-top: 22px; border-top: 1px dashed var(--line); padding-top: 22px; }
-.kura-baslik {
+.kura-panel code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2); padding: 1px 5px; border-radius: var(--radius); }
+
+/* Durum şeridi (yayın + sayfa linkleri + ayarlar) */
+.kura-serit {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; flex-wrap: wrap; margin: 22px 0 8px;
+  gap: 12px; flex-wrap: wrap;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--paper-2); padding: 10px 14px;
 }
-.kura-baslik:first-child { margin-top: 0; }
-.kura-baslik h4 { font-size: 17px; }
-.kura-torbalar {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px; margin-top: 12px; margin-bottom: 8px;
+.kura-serit-sol, .kura-serit-sag { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.kura-serit-link { font-size: 13px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 4px; }
+.kura-serit-link:hover { color: var(--ink); }
+.kura-serit-link code { background: var(--paper); }
+.kura-ayarlar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px; align-items: end;
+  margin-top: 10px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius);
 }
-.kura-torba { display: flex; flex-direction: column; gap: 6px; }
-.kura-torba span {
+.kura-ayarlar-islem { display: flex; justify-content: flex-end; grid-column: 1 / -1; }
+.kura-alan { display: flex; flex-direction: column; gap: 6px; }
+.kura-alan > span {
   font-family: var(--font-mono); font-size: 12px;
   letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2);
 }
-.kura-torba textarea {
-  font-family: var(--font-mono); font-size: 14px; color: var(--ink);
+.kura-alan small { font-size: 12.5px; color: var(--ink-2); }
+
+/* Bildirim alanı: hata ya da kısa başarı mesajı (yer kaplaması sabit) */
+.kura-bildirim { min-height: 34px; margin: 12px 0 4px; display: flex; align-items: center; }
+.kura-bildirim .form-hata { margin: 0; }
+.kura-basari { font-size: 14px; color: #1d7a3d; font-weight: 600; }
+
+/* Bölüm kartları (adımlar) */
+.kura-bolum {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--paper); margin-top: 10px;
+}
+html[data-theme="dark"] .kura-bolum { background: var(--paper-2); }
+.kura-bolum-ust {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; padding: 10px 14px 10px 10px;
+}
+.kura-bolum.acik .kura-bolum-ust { border-bottom: 1px solid var(--line); }
+.kura-bolum-baslik {
+  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 240px;
+  text-align: left; padding: 4px 6px; border-radius: var(--radius);
+}
+.kura-bolum-baslik:hover { background: color-mix(in srgb, var(--paper-2) 70%, transparent); }
+html[data-theme="dark"] .kura-bolum-baslik:hover { background: var(--paper); }
+.kura-bolum-no {
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  border: 1px solid var(--ink); color: var(--ink);
+}
+.kura-bolum.tamam .kura-bolum-no { background: #1d7a3d; border-color: #1d7a3d; color: #fff; }
+.kura-bolum-ad { font-size: 16.5px; font-weight: 600; }
+.kura-bolum-durum { font-size: 13px; color: var(--ink-2); }
+.kura-bolum-ok {
+  margin-left: auto; font-family: var(--font-mono); font-size: 16px; color: var(--ink-2);
+  width: 22px; text-align: center;
+}
+.kura-bolum-islemler { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.kura-bolum-icerik { padding: 16px 16px 18px; }
+.kura-aciklama { font-size: 14px; color: var(--ink-2); max-width: 78ch; margin-bottom: 14px; }
+.kura-aciklama b { color: var(--ink); }
+.kura-notlar { list-style: none; margin-top: 12px; font-size: 13.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; }
+.kura-notlar b { color: var(--ink); font-weight: 600; }
+
+/* Girdiler */
+.kura-metin {
+  width: 100%; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6; color: var(--ink);
   background: var(--paper); border: 1px solid var(--line);
   border-radius: var(--radius); padding: 10px 12px; resize: vertical;
+  white-space: pre; overflow-x: auto;
 }
-.kura-torba textarea:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
-.kura-torba textarea:disabled { opacity: 0.6; }
-.kura-profiller { margin-top: 12px; }
-.kura-profiller textarea { white-space: pre; overflow-x: auto; }
+.kura-metin:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
 .kura-girdi {
-  font: inherit; font-size: 14.5px; color: var(--ink);
+  font: inherit; font-size: 14px; color: var(--ink);
   background: var(--paper); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 10px 12px;
+  border-radius: var(--radius); padding: 9px 11px;
 }
 .kura-girdi:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
-/* Torba çipleri (profil listesinden seçilen oyuncular) */
+
+/* Torbalar */
+.kura-torbalar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.kura-torba {
+  display: flex; flex-direction: column; gap: 8px;
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 10px;
+  background: var(--paper);
+}
+html[data-theme="dark"] .kura-torba { background: var(--paper-2); }
+.kura-torba.dolu { border-color: color-mix(in srgb, #1d7a3d 45%, transparent); }
+.kura-torba-ust { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.kura-torba-ad { font-weight: 600; font-size: 14.5px; }
+.kura-torba-sayi { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.04em; color: var(--ink-2); }
+.kura-torba.dolu .kura-torba-sayi { color: #1d7a3d; }
 .kura-cipler {
   list-style: none; display: flex; flex-direction: column; gap: 4px;
   min-height: 44px; padding: 6px; border: 1px dashed var(--line); border-radius: var(--radius);
 }
-.kura-cipler > .t-day { padding: 6px 4px; }
+.kura-cip-bos { font-size: 13px; color: var(--ink-2); padding: 6px 4px; }
 .kura-cip {
   display: flex; align-items: center; gap: 8px;
   padding: 4px 6px 4px 4px; border: 1px solid var(--line); border-radius: var(--radius);
@@ -1511,8 +1580,23 @@ html[data-theme="dark"] .agac-mac { background: var(--paper-2); }
 .kura-cip-sil:hover { background: var(--paper-2); color: var(--red); }
 .kura-ekle { display: flex; flex-direction: column; gap: 6px; }
 .kura-ekle .kura-girdi { font-size: 13.5px; padding: 8px 10px; }
-html[data-theme="dark"] .kura-cip { background: var(--paper-2); }
-.kura-panel code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2); padding: 1px 5px; border-radius: var(--radius); }
+
+/* Kura bölgeleri listesi */
+.kura-bolgeler {
+  list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 6px 14px;
+}
+.kura-bolge {
+  display: flex; align-items: center; gap: 10px; font-size: 13.5px;
+  padding: 6px 8px; border-radius: var(--radius); border: 1px dashed var(--line); color: var(--ink-2);
+}
+.kura-bolge.cekildi { border-style: solid; color: var(--ink); }
+.kura-bolge-no {
+  flex: none; font-family: var(--font-mono); font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.04em; color: var(--ink-2);
+}
+.kura-bolge.cekildi .kura-bolge-no { color: var(--red); }
+.kura-bolge-ad { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Dikey form düzeni (kulüp başvurusu) */
 .t-form-dikey .t-form-grid { grid-template-columns: 1fr; max-width: 520px; }

@@ -292,7 +292,7 @@ function Panel({ onCikis }) {
                   className={`admin-mini${acikKura === t.id ? " aktif" : ""}`}
                   onClick={() => setAcikKura(acikKura === t.id ? null : t.id)}
                 >
-                  {acikKura === t.id ? "Kurayı Gizle" : "Kura & Ağaç"}
+                  {acikKura === t.id ? "Yönetimi Gizle" : "Kura & Ağaç"}
                 </button>
                 <button className="admin-mini red" onClick={() => turnuvaSil(t)}>Sil</button>
               </div>

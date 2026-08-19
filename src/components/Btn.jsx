@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 const MotionLink = motion.create(Link);
 
 // kind: red | ink | ghost | light | ghost-light
+// small: admin panelleri için sıkışık boy
 // İç sayfa için `to`, dış bağlantı için `href` kullanın;
 // ikisi de verilmezse gerçek bir <button> üretir (formlar için).
-export default function Btn({ to, href, kind = "red", arrow, children, ...rest }) {
-  const cls = `btn btn--${kind}`;
+export default function Btn({ to, href, kind = "red", small, arrow, children, ...rest }) {
+  const cls = `btn btn--${kind}${small ? " btn--sm" : ""}`;
   const micro = { whileTap: { scale: 0.97 }, whileHover: { y: -2 } };
   const inner = (
     <>
