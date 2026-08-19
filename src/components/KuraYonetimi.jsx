@@ -193,10 +193,6 @@ export default function KuraYonetimi({ turnuva }) {
           {bekliyor ? "Kaydediliyor…" : "Profilleri Kaydet"}
         </Btn>
       </div>
-      <p className="t-day">
-        Her satıra <code>Ad</code> + sekme/boşluk + GeoGuessr profil linki (örn. <code>DK https://www.geoguessr.com/user/…</code>) — Excel/tablodan kopyalayıp yapıştırabilirsiniz.
-        Adlar torbalardaki adlarla birebir aynı olmalı; avatar, ülke ve lig bilgisi bu linkten çekilir.
-      </p>
       <label className="kura-torba kura-profiller">
         <span>
           Profiller — {Object.keys(kayitliProfiller).length} kayıtlı
@@ -225,15 +221,7 @@ export default function KuraYonetimi({ turnuva }) {
           </Btn>
         )}
       </div>
-      {kuraBasladi ? (
-        <p className="t-day">Kura başladığı için torbalar kilitli. Düzenlemek için önce kurayı sıfırlayın.</p>
-      ) : (
-        <p className="t-day">
-          Her torbaya güç sıralamasına göre 8 oyuncu seçin. Liste, aşağıda kaydettiğiniz oyuncu profillerinden gelir;
-          listede olmayan birini eklemek için adını yazıp Enter'a basın.
-          {torbalarDegisti && <b> Değişiklikler henüz kaydedilmedi.</b>}
-        </p>
-      )}
+      {kuraBasladi && <p className="t-day">Kura başladığı için torbalar kilitli.</p>}
       <div className="kura-torbalar">
         {TORBA_BASLIK.map((baslik, p) => (
           <div key={baslik} className="kura-torba">
@@ -308,12 +296,7 @@ export default function KuraYonetimi({ turnuva }) {
           </Btn>
         </div>
       </div>
-      <p className="t-day">
-        Yayınlandığında <code>{sayfaYolu}</code> adresinde oyuncu kartları (torbalardan), eşleşmeler, ağaç ve canlı
-        izleme sayfası (<code>{sayfaYolu}/canli</code>) herkese açılır. Torbalar ve kura boşken de yayınlanabilir;
-        burada kaydettiğiniz her değişiklik (torbalar, profiller, kura, maç sonuçları) sayfaya anında yansır —
-        açık olan izleyici sayfaları 30 saniyede bir kendini yeniler.
-      </p>
+      <p className="t-day"><code>{sayfaYolu}</code> · canlı: <code>{sayfaYolu}/canli</code></p>
       {hata && <p className="form-hata" role="alert">{hata}</p>}
       <div className="kura-torbalar">
         <label className="kura-torba">
@@ -362,13 +345,7 @@ export default function KuraYonetimi({ turnuva }) {
         </div>
       </div>
       {!torbalarHazir && !kuraBasladi && (
-        <p className="t-day">Kura çekilebilmesi için 4 torbanın da 8'er oyuncuyla kaydedilmiş olması gerekir.</p>
-      )}
-      {torbalarHazir && !kuraBitti && (
-        <p className="t-day">
-          Her basışta 4 torbadan rastgele birer oyuncu çekilir ve sıradaki bölgeye yerleştirilir.
-          İlk tur eşleşmeleri: Torba 1 vs Torba 4 · Torba 2 vs Torba 3.
-        </p>
+        <p className="t-day">Kura için 4 torbanın da 8 oyuncuyla kaydedilmiş olması gerekir.</p>
       )}
 
       {/* ---- Ağaç ---- */}
@@ -380,7 +357,7 @@ export default function KuraYonetimi({ turnuva }) {
               {kayit.yayinda ? "Sitede yayında" : "Yayında değil"}
             </span>
           </div>
-          <p className="t-day">Maçın kazananını işaretlemek için oyuncunun adına tıklayın; geri almak için tekrar tıklayın.</p>
+          <p className="t-day">Kazananı işaretlemek için oyuncuya tıklayın.</p>
           <AgacGorunum
             bolgeler={kayit.bolgeler}
             sonuclar={kayit.sonuclar}

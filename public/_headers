@@ -2,7 +2,7 @@
 # NOT: index.html'deki satır içi <script> değişirse buradaki ve vercel.json'daki
 # sha256 hash'i yeniden hesaplanmalı (konsoldaki CSP hatası doğru hash'i yazar).
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-q8BkKtOUVmoJ9YjPOTrdu2dp1cVLlL9kn+UmojNE/40='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com https://*.basemaps.cartocdn.com; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-q8BkKtOUVmoJ9YjPOTrdu2dp1cVLlL9kn+UmojNE/40='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://server.arcgisonline.com https://*.basemaps.cartocdn.com https://www.geoguessr.com https://flagcdn.com; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com; frame-ancestors 'none'; upgrade-insecure-requests
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
