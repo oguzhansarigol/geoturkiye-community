@@ -49,7 +49,7 @@ function Mac({ mac, onKazanan, onOyuncu, avatarlar, yeniKonum }) {
                 {avatar ? <img src={avatar} alt="" loading="lazy" /> : (oyuncu ? oyuncu[0] : "")}
               </span>
             )}
-            <span className="agac-oyuncu-ad">{oyuncu || "—"}</span>
+            <span className="agac-oyuncu-ad">{oyuncu || " "}</span>
           </button>
         );
       })}
@@ -103,7 +103,7 @@ export default function AgacGorunum({ bolgeler, sonuclar, turAdlari, sampiyonEti
               <div className="agac-slot">
                 <div className={`agac-sampiyon${sampiyon ? "" : " bos"}`}>
                   {sampiyonAvatar && <img className="agac-sampiyon-avatar" src={sampiyonAvatar} alt="" />}
-                  {sampiyon || "—"}
+                  {sampiyon || " "}
                 </div>
               </div>
             </div>

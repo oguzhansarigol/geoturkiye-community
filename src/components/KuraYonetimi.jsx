@@ -195,7 +195,7 @@ export default function KuraYonetimi({ turnuva }) {
       </div>
       <label className="kura-torba kura-profiller">
         <span>
-          Profiller — {Object.keys(kayitliProfiller).length} kayıtlı
+          Profiller: {Object.keys(kayitliProfiller).length} kayıtlı
           {torbaAdlari.length > 0 && profilsiz.length > 0 && ` · ${profilsiz.length} oyuncunun linki yok`}
         </span>
         <textarea
@@ -225,7 +225,7 @@ export default function KuraYonetimi({ turnuva }) {
       <div className="kura-torbalar">
         {TORBA_BASLIK.map((baslik, p) => (
           <div key={baslik} className="kura-torba">
-            <span>{baslik} — {torbaListe[p].length}/{TORBA_BOYU}</span>
+            <span>{baslik} · {torbaListe[p].length}/{TORBA_BOYU}</span>
             <ul className="kura-cipler">
               {torbaListe[p].map((ad) => (
                 <li key={ad} className="kura-cip">
@@ -323,7 +323,7 @@ export default function KuraYonetimi({ turnuva }) {
 
       {/* ---- Kura ---- */}
       <div className="kura-baslik">
-        <h4>Kura — Bölge {Math.min(kayit.bolgeler.length + 1, BOLGE_SAYISI)}/{BOLGE_SAYISI}</h4>
+        <h4>Kura · Bölge {Math.min(kayit.bolgeler.length + 1, BOLGE_SAYISI)}/{BOLGE_SAYISI}</h4>
         <div className="admin-satir">
           {!kuraBitti && (
             <>
