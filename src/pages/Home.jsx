@@ -9,7 +9,7 @@ import LiveMap from "../components/LiveMap.jsx";
 import CountUp from "../components/CountUp.jsx";
 import CtaBand from "../components/CtaBand.jsx";
 import AnimatedTopo from "../components/AnimatedTopo.jsx";
-import { DISCORD_URL, TURNUVA_YAYIN_URL, SPONSOR_EPOSTA } from "../config.js";
+import { DISCORD_URL, TURNUVA_YAYIN_URL, TURNUVA_SAYFA_YOLU, SPONSOR_EPOSTA } from "../config.js";
 import { NOANIM } from "../anim.js";
 import { useLang } from "../i18n.jsx";
 
@@ -75,7 +75,7 @@ export default function Home() {
             <a href={TURNUVA_YAYIN_URL} target="_blank" rel="noopener">
               <span className="turnuva-bar-nokta" aria-hidden="true" /> {s.bar.izle}
             </a>
-            <Link to="/etkinlikler#turnuva-agaci">{s.bar.agac}</Link>
+            <Link to={TURNUVA_SAYFA_YOLU}>{s.bar.agac}</Link>
             <a
               href={`mailto:${SPONSOR_EPOSTA}?subject=${encodeURIComponent(s.bar.baslik + " — " + s.bar.sponsor)}`}
               onClick={sponsorTikla}
