@@ -239,17 +239,28 @@ export default function KuraYonetimi({ turnuva }) {
       <div className="kura-baslik">
         <h4>Turnuva Sayfası</h4>
         <div className="admin-satir">
+          <span className={`tag ${kayit.yayinda ? "turnuva-acik" : "turnuva-taslak"}`}>
+            {kayit.yayinda ? "Sitede yayında" : "Yayında değil"}
+          </span>
           {kayit.yayinda && (
             <a className="admin-mini" href={sayfaYolu} target="_blank" rel="noreferrer">Sayfayı Aç ↗</a>
           )}
           <Btn kind="ink" onClick={sayfayiKaydet} disabled={bekliyor}>
             {bekliyor ? "Kaydediliyor…" : "Ayarları Kaydet"}
           </Btn>
+          <Btn
+            kind={kayit.yayinda ? "ghost" : "red"}
+            onClick={() => guncelle({ yayinda: !kayit.yayinda })}
+            disabled={bekliyor || (!kayit.yayinda && !torbalarHazir)}
+          >
+            {kayit.yayinda ? "Yayından Kaldır" : "Yayınla"}
+          </Btn>
         </div>
       </div>
       <p className="t-day">
-        Ağaç yayınlandığında <code>{sayfaYolu}</code> adresinde oyuncu kartları, eşleşmeler ve canlı izleme sayfası
-        (<code>{sayfaYolu}/canli</code>) herkese açılır.
+        Yayınlandığında <code>{sayfaYolu}</code> adresinde oyuncu kartları (torbalardan), eşleşmeler, ağaç ve canlı
+        izleme sayfası (<code>{sayfaYolu}/canli</code>) herkese açılır; kura çekilmeden de yayınlanabilir — ağaç kura
+        sonrası kendiliğinden dolar. Yayınlamak için 4 torbanın da kaydedilmiş olması gerekir.
       </p>
       <div className="kura-torbalar">
         <label className="kura-torba">
@@ -312,18 +323,9 @@ export default function KuraYonetimi({ turnuva }) {
         <>
           <div className="kura-baslik">
             <h4>Turnuva Ağacı</h4>
-            <div className="admin-satir">
-              <span className={`tag ${kayit.yayinda ? "turnuva-acik" : "turnuva-taslak"}`}>
-                {kayit.yayinda ? "Sitede yayında" : "Yayında değil"}
-              </span>
-              <Btn
-                kind={kayit.yayinda ? "ghost" : "ink"}
-                onClick={() => guncelle({ yayinda: !kayit.yayinda })}
-                disabled={bekliyor}
-              >
-                {kayit.yayinda ? "Yayından Kaldır" : "Yayınla"}
-              </Btn>
-            </div>
+            <span className={`tag ${kayit.yayinda ? "turnuva-acik" : "turnuva-taslak"}`}>
+              {kayit.yayinda ? "Sitede yayında" : "Yayında değil"}
+            </span>
           </div>
           <p className="t-day">Maçın kazananını işaretlemek için oyuncunun adına tıklayın; geri almak için tekrar tıklayın.</p>
           <AgacGorunum

@@ -57,12 +57,16 @@ export default function TurnuvaAgaci() {
                   <Btn to={turnuvaYolu(agac, true)} kind="red" arrow="→">{t.turnuva.canliBtn}</Btn>
                 </div>
               </div>
-              <AgacGorunum
-                bolgeler={agac.bolgeler}
-                sonuclar={agac.sonuclar}
-                turAdlari={s.agacTurlar}
-                sampiyonEtiket={s.agacSampiyon}
-              />
+              {(agac.bolgeler || []).length > 0 ? (
+                <AgacGorunum
+                  bolgeler={agac.bolgeler}
+                  sonuclar={agac.sonuclar}
+                  turAdlari={s.agacTurlar}
+                  sampiyonEtiket={s.agacSampiyon}
+                />
+              ) : (
+                <p className="t-day">{t.turnuva.kuraBekleniyor}</p>
+              )}
             </div>
           </Reveal>
         ))}
