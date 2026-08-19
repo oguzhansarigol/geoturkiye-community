@@ -7,7 +7,7 @@ import AgacGorunum from "../components/AgacGorunum.jsx";
 import { OyuncuDetay, OyuncuKart, TurnuvaGeri, oyuncuDurumlari } from "../components/TurnuvaOyuncular.jsx";
 import { useTurnuvaSayfasi, turnuvaYolu } from "../turnuvaSayfa.js";
 import { guncelTur, TUR_SIRASI } from "../turnuvaAgaci.js";
-import { DISCORD_URL } from "../config.js";
+import { DISCORD_URL, SPONSOR_EPOSTA } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
 // ============================================================
@@ -77,7 +77,6 @@ export default function Turnuva() {
               {oyuncular.length > 0 && <span className="t-day">{oyuncular.length} {s.oyuncuSayisi}</span>}
             </p>
           </Reveal>
-          {turnuva.aciklama && <Reveal delay={0.14}><p className="lead">{turnuva.aciklama}</p></Reveal>}
           <Reveal delay={0.18}>
             <div className="turnuva-hero-btnler">
               <Btn to={turnuvaYolu(agac, true)} kind="red" arrow="→">
@@ -85,6 +84,13 @@ export default function Turnuva() {
               </Btn>
               <Btn href="#oyuncular" kind="ghost" arrow="↓">{s.oyuncularBtn}</Btn>
               <Btn href={DISCORD_URL} kind="ghost" arrow="↗">Discord</Btn>
+              <Btn
+                href={`mailto:${SPONSOR_EPOSTA}?subject=${encodeURIComponent(turnuva.ad + " · " + t.home.bar.sponsor)}`}
+                kind="ghost"
+                arrow="↗"
+              >
+                {t.home.bar.sponsor}
+              </Btn>
             </div>
           </Reveal>
         </div>
