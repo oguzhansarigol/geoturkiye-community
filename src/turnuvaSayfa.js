@@ -1,0 +1,98 @@
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "./supabase.js";
+import { useGeoProfiller } from "./geoProfil.js";
+import { maclariHesapla } from "./turnuvaAgaci.js";
+
+// ============================================================
+// Turnuva sayfası (/turnuva/:kimlik) ve canlı izleme sayfası için
+// ortak veri katmanı: yayındaki ağacı Supabase'den çeker, oyuncu
+// listesini ve GeoGuessr profillerini (avatar, ülke, lig) hazırlar.
+// kimlik: ağaç slug'ı ya da turnuva id'si (uuid)
+// ============================================================
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SECIM = "turnuva_id, slug, torbalar, bolgeler, sonuclar, oyuncular, yayin_url, turnuvalar!inner(ad, aciklama, format, tarih)";
+
+// Turnuvanın sayfa adresi (slug varsa onu, yoksa id'yi kullanır)
+export function turnuvaYolu(agac, canli = false) {
+  return `/turnuva/${agac.slug || agac.turnuva_id}${canli ? "/canli" : ""}`;
+}
+
+// Ağaçtaki oyuncu adları: torbalar doluysa torba sırasıyla (1 → 4),
+// değilse kura bölgelerinden; her ad bir kez geçer.
+export function oyuncuAdlari(agac) {
+  const torbalardan = (agac.torbalar || []).flat().filter(Boolean);
+  const kaynak = torbalardan.length ? torbalardan : (agac.bolgeler || []).flat().filter(Boolean);
+  return [...new Set(kaynak)];
+}
+
+// YouTube linkini gömülebilir adrese çevirir; çevrilemezse null.
+// Desteklenen biçimler: youtu.be/ID, watch?v=ID, /live/ID, /embed/ID,
+// /channel/UC… (kanalın aktif canlı yayını)
+export function yayinGomme(url) {
+  if (!url) return null;
+  let u;
+  try { u = new URL(url); } catch { return null; }
+  const host = u.hostname.replace(/^www\.|^m\./, "");
+  if (host === "youtu.be") {
+    const id = u.pathname.slice(1).split("/")[0];
+    return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1` : null;
+  }
+  if (host !== "youtube.com" && host !== "youtube-nocookie.com") return null;
+  const v = u.searchParams.get("v");
+  if (v) return `https://www.youtube-nocookie.com/embed/${v}?autoplay=1`;
+  const m = /^\/(?:live|embed|shorts)\/([A-Za-z0-9_-]{6,})/.exec(u.pathname);
+  if (m) return `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1`;
+  const k = /^\/channel\/(UC[A-Za-z0-9_-]+)/.exec(u.pathname);
+  if (k) return `https://www.youtube-nocookie.com/embed/live_stream?channel=${k[1]}&autoplay=1`;
+  return null;
+}
+
+// durum: "yukleniyor" | "yok" | "hazir"
+export function useTurnuvaSayfasi(kimlik) {
+  const [agac, setAgac] = useState(undefined); // undefined = yükleniyor, null = yok
+
+  useEffect(() => {
+    if (!supabase || !kimlik) { setAgac(null); return; }
+    let iptal = false;
+    setAgac(undefined);
+    (async () => {
+      const sorgu = supabase.from("turnuva_agaclari").select(SECIM).eq("yayinda", true);
+      const { data } = await (UUID_RE.test(kimlik)
+        ? sorgu.eq("turnuva_id", kimlik)
+        : sorgu.eq("slug", kimlik)
+      ).maybeSingle();
+      if (!iptal) setAgac(data || null);
+    })();
+    return () => { iptal = true; };
+  }, [kimlik]);
+
+  const adlar = useMemo(() => (agac ? oyuncuAdlari(agac) : []), [agac]);
+  const profilMap = agac?.oyuncular || {};
+  const urller = useMemo(
+    () => [...new Set(adlar.map((ad) => profilMap[ad]).filter(Boolean))],
+    [adlar, profilMap]
+  );
+  const profiller = useGeoProfiller(urller);
+
+  // Ad → { ad, profilUrl, profil } ; avatarlar: ad → görsel url
+  const oyuncular = useMemo(
+    () => adlar.map((ad) => ({ ad, profilUrl: profilMap[ad] || null, profil: profiller[profilMap[ad]] || null })),
+    [adlar, profilMap, profiller]
+  );
+  const avatarlar = useMemo(() => {
+    const m = {};
+    for (const o of oyuncular) if (o.profil?.avatar) m[o.ad] = o.profil.avatar;
+    return m;
+  }, [oyuncular]);
+  const turlar = useMemo(() => (agac ? maclariHesapla(agac.bolgeler, agac.sonuclar) : null), [agac]);
+
+  return {
+    durum: agac === undefined ? "yukleniyor" : agac === null ? "yok" : "hazir",
+    agac,
+    turnuva: agac?.turnuvalar || null,
+    oyuncular,
+    avatarlar,
+    turlar,
+  };
+}

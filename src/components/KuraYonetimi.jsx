@@ -15,9 +15,29 @@ import { kalanOyuncular, BOLGE_SAYISI, TORBA_BOYU } from "../turnuvaAgaci.js";
 
 const TORBA_BASLIK = ["Torba 1 (1-8)", "Torba 2 (9-16)", "Torba 3 (17-24)", "Torba 4 (25-32)"];
 const TUR_ADLARI = ["Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"];
+const URL_RE = /https?:\/\/\S+/;
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 function satirlaraBol(metin) {
   return metin.split("\n").map((s) => s.trim()).filter(Boolean);
+}
+
+// "Ad<TAB>link" ya da "Ad link" satırlarını { ad: link } haritasına çevirir.
+// Linksiz satırlar atlanır (hatalar listesine yazılır).
+function profilleriAyristir(metin) {
+  const oyuncular = {};
+  const hatali = [];
+  for (const satir of satirlaraBol(metin)) {
+    const m = URL_RE.exec(satir);
+    const ad = (m ? satir.slice(0, m.index) : satir).replace(/\t/g, " ").trim();
+    if (!m || !ad) { hatali.push(satir); continue; }
+    oyuncular[ad] = m[0].trim();
+  }
+  return { oyuncular, hatali };
+}
+
+function profilleriMetneCevir(oyuncular) {
+  return Object.entries(oyuncular || {}).map(([ad, url]) => `${ad}\t${url}`).join("\n");
 }
 
 export default function KuraYonetimi({ turnuva }) {
@@ -26,6 +46,9 @@ export default function KuraYonetimi({ turnuva }) {
   const [hata, setHata] = useState("");
   const [bekliyor, setBekliyor] = useState(false);
   const [sonBolge, setSonBolge] = useState(null); // animasyon: son çekilen bölge indeksi
+  const [profilMetni, setProfilMetni] = useState("");
+  const [yayinUrl, setYayinUrl] = useState("");
+  const [slug, setSlug] = useState("");
 
   // Kayıt yoksa varsayılan satırı oluştur (yayinda=false ile başlar)
   useEffect(() => {
@@ -51,6 +74,9 @@ export default function KuraYonetimi({ turnuva }) {
       }
       setKayit(satir);
       setMetinler(satir.torbalar.map((t) => t.join("\n")));
+      setProfilMetni(profilleriMetneCevir(satir.oyuncular));
+      setYayinUrl(satir.yayin_url || "");
+      setSlug(satir.slug || "");
     })();
     return () => { iptal = true; };
   }, [turnuva.id]);
@@ -112,12 +138,42 @@ export default function KuraYonetimi({ turnuva }) {
     guncelle({ sonuclar });
   }
 
+  function profilleriKaydet() {
+    const { oyuncular, hatali } = profilleriAyristir(profilMetni);
+    if (hatali.length) {
+      setHata("Şu satırlarda link bulunamadı: " + hatali.slice(0, 3).join(" · ") + (hatali.length > 3 ? " …" : ""));
+      return;
+    }
+    guncelle({ oyuncular });
+  }
+
+  function sayfayiKaydet() {
+    const temizSlug = slug.trim().toLowerCase();
+    if (temizSlug && !SLUG_RE.test(temizSlug)) {
+      setHata("Sayfa adresi sadece küçük harf, rakam ve tire içerebilir (örn. nm-2026).");
+      return;
+    }
+    const temizYayin = yayinUrl.trim();
+    if (temizYayin && !URL_RE.test(temizYayin)) {
+      setHata("Yayın linki http(s):// ile başlamalı.");
+      return;
+    }
+    guncelle({ slug: temizSlug || null, yayin_url: temizYayin });
+  }
+
   if (hata && kayit === undefined) return <p className="form-hata" role="alert">{hata}</p>;
   if (kayit === undefined) return <p className="t-day">Ağaç yükleniyor…</p>;
 
   const torbalarHazir = kayit.torbalar.every((t) => t.length === TORBA_BOYU);
   const kuraBasladi = kayit.bolgeler.length > 0;
   const kuraBitti = kayit.bolgeler.length >= BOLGE_SAYISI;
+
+  // Profil eşleşmesi: torbadaki adlardan kaçının linki var
+  const torbaAdlari = kayit.torbalar.flat();
+  const kayitliProfiller = kayit.oyuncular || {};
+  const profilsiz = torbaAdlari.filter((ad) => !kayitliProfiller[ad]);
+  const fazlaProfil = Object.keys(kayitliProfiller).filter((ad) => torbaAdlari.length && !torbaAdlari.includes(ad));
+  const sayfaYolu = `/turnuva/${kayit.slug || kayit.turnuva_id}`;
 
   return (
     <div className="kura-panel">
@@ -147,6 +203,75 @@ export default function KuraYonetimi({ turnuva }) {
             />
           </label>
         ))}
+      </div>
+
+      {/* ---- Oyuncu profilleri (avatar / ülke / lig için) ---- */}
+      <div className="kura-baslik">
+        <h4>Oyuncu Profilleri</h4>
+        <Btn kind="ink" onClick={profilleriKaydet} disabled={bekliyor}>
+          {bekliyor ? "Kaydediliyor…" : "Profilleri Kaydet"}
+        </Btn>
+      </div>
+      <p className="t-day">
+        Her satıra <code>Ad</code> + sekme/boşluk + GeoGuessr profil linki (örn. <code>DK https://www.geoguessr.com/user/…</code>) — Excel/tablodan kopyalayıp yapıştırabilirsiniz.
+        Adlar torbalardaki adlarla birebir aynı olmalı; avatar, ülke ve lig bilgisi bu linkten çekilir.
+      </p>
+      <label className="kura-torba kura-profiller">
+        <span>
+          Profiller — {Object.keys(kayitliProfiller).length} kayıtlı
+          {torbaAdlari.length > 0 && profilsiz.length > 0 && ` · ${profilsiz.length} oyuncunun linki yok`}
+        </span>
+        <textarea
+          rows={8}
+          value={profilMetni}
+          placeholder={"DK\thttps://www.geoguessr.com/user/616dadb53ea44c00014582b8"}
+          onChange={(e) => setProfilMetni(e.target.value)}
+        />
+      </label>
+      {torbaAdlari.length > 0 && profilsiz.length > 0 && (
+        <p className="t-day">Linki olmayanlar: {profilsiz.join(", ")}</p>
+      )}
+      {fazlaProfil.length > 0 && (
+        <p className="t-day">Torbalarda olmayan adlar (yazım farkı olabilir): {fazlaProfil.join(", ")}</p>
+      )}
+
+      {/* ---- Sayfa ayarları ---- */}
+      <div className="kura-baslik">
+        <h4>Turnuva Sayfası</h4>
+        <div className="admin-satir">
+          {kayit.yayinda && (
+            <a className="admin-mini" href={sayfaYolu} target="_blank" rel="noreferrer">Sayfayı Aç ↗</a>
+          )}
+          <Btn kind="ink" onClick={sayfayiKaydet} disabled={bekliyor}>
+            {bekliyor ? "Kaydediliyor…" : "Ayarları Kaydet"}
+          </Btn>
+        </div>
+      </div>
+      <p className="t-day">
+        Ağaç yayınlandığında <code>{sayfaYolu}</code> adresinde oyuncu kartları, eşleşmeler ve canlı izleme sayfası
+        (<code>{sayfaYolu}/canli</code>) herkese açılır.
+      </p>
+      <div className="kura-torbalar">
+        <label className="kura-torba">
+          <span>Sayfa adresi (slug, opsiyonel)</span>
+          <input
+            className="kura-girdi"
+            type="text"
+            value={slug}
+            placeholder="nm-2026"
+            onChange={(e) => setSlug(e.target.value)}
+          />
+        </label>
+        <label className="kura-torba">
+          <span>Canlı yayın linki (YouTube)</span>
+          <input
+            className="kura-girdi"
+            type="url"
+            value={yayinUrl}
+            placeholder="https://www.youtube.com/live/…"
+            onChange={(e) => setYayinUrl(e.target.value)}
+          />
+        </label>
       </div>
 
       {/* ---- Kura ---- */}

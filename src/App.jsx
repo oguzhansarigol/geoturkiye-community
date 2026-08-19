@@ -13,6 +13,8 @@ import FaydaliSiteler from "./pages/FaydaliSiteler.jsx";
 import Katil from "./pages/Katil.jsx";
 import Admin from "./pages/Admin.jsx";
 import Davet from "./pages/Davet.jsx";
+import Turnuva from "./pages/Turnuva.jsx";
+import TurnuvaCanli from "./pages/TurnuvaCanli.jsx";
 import { DAVET_YOLU } from "./config.js";
 
 export default function App() {
@@ -50,6 +52,8 @@ export default function App() {
           <Route path="/katil" element={<Katil />} />
           <Route path="/admin" element={<Admin />} />
           <Route path={DAVET_YOLU} element={<Davet />} />
+          <Route path="/turnuva/:kimlik" element={<Turnuva />} />
+          <Route path="/turnuva/:kimlik/canli" element={<TurnuvaCanli />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </AnimatePresence>

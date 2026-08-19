@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useGeoProfiller as useGeoProfillerUrl } from "../geoProfil.js";
 
 // ============================================================
 // Admin başvuru tablosu (turnuva + kulüp başvurularında ortak):
@@ -8,45 +9,9 @@ import { useEffect, useRef, useState } from "react";
 
 const BASVURU_ETIKET = { bekliyor: "Bekliyor", onaylandi: "Onaylandı", reddedildi: "Reddedildi" };
 
-// ---------- GeoGuessr profil önbelleği ----------
-// Aynı url için tek istek atılır; sonuca birden çok bileşen abone
-// olabilir (StrictMode'un çift mount'u dahil).
-const profilOnbellek = new Map(); // url -> veri (obje | null)
-const bekleyen = new Map();      // url -> devam eden istek (Promise)
-
-function profilGetir(url) {
-  if (profilOnbellek.has(url)) return Promise.resolve(profilOnbellek.get(url));
-  if (!bekleyen.has(url)) {
-    bekleyen.set(
-      url,
-      fetch(`/api/geo-profil?url=${encodeURIComponent(url)}`)
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null)
-        .then((v) => {
-          profilOnbellek.set(url, v);
-          bekleyen.delete(url);
-          return v;
-        })
-    );
-  }
-  return bekleyen.get(url);
-}
-
+// Başvuru satırlarının profil linklerini ortak önbellekten zenginleştirir
 function useGeoProfiller(satirlar) {
-  const [profiller, setProfiller] = useState({});
-  const anahtar = satirlar.map((b) => b.oyun_profili).join("|");
-
-  useEffect(() => {
-    let iptal = false;
-    satirlar.forEach(({ oyun_profili: url }) => {
-      profilGetir(url).then((v) => {
-        if (!iptal) setProfiller((p) => (p[url] === v ? p : { ...p, [url]: v }));
-      });
-    });
-    return () => { iptal = true; };
-  }, [anahtar]);
-
-  return profiller;
+  return useGeoProfillerUrl(satirlar.map((b) => b.oyun_profili));
 }
 
 // ---------- Lig rozeti ----------

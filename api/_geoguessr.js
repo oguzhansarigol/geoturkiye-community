@@ -15,6 +15,12 @@ export function profilIdCikar(url) {
   return m ? m[1].toLowerCase() : null;
 }
 
+// GeoGuessr görsel yolu ("pin/abc.png") → yeniden boyutlandırılmış tam adres
+function gorselUrl(yol, boyut) {
+  if (!yol) return null;
+  return `https://www.geoguessr.com/images/resize:auto:${boyut}:${boyut}/gravity:ce/plain/${yol}`;
+}
+
 async function jsonGetir(url) {
   const r = await fetch(url, {
     headers: { "user-agent": UA, accept: "application/json" },
@@ -43,6 +49,8 @@ export async function geoProfilGetir(id) {
     veri.nick = u.nick;
     veri.ulke = u.countryCode || null;
     veri.seviye = u.progress?.level ?? null;
+    veri.avatar = gorselUrl(u.pin?.url, 144);
+    veri.tamBoy = gorselUrl(u.fullBodyPin || u.avatar?.fullBodyPath, 400);
   }
 
   if (lig.status === "fulfilled") {

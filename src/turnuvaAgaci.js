@@ -62,3 +62,26 @@ export function kalanOyuncular(torbalar, bolgeler) {
     torba.filter((oyuncu) => !bolgeler.some((bolge) => bolge[p] === oyuncu))
   );
 }
+
+// Oynanmakta olan tur: iki tarafı da belli olup kazananı henüz
+// işaretlenmemiş maç içeren ilk tur; hepsi bittiyse null.
+export function guncelTur(turlar) {
+  for (const tur of TUR_SIRASI) {
+    if (turlar[tur].some((m) => m.ust && m.alt && !m.kazanan)) return tur;
+  }
+  return null;
+}
+
+// Bir oyuncunun ağaçtaki yolu: girdiği maçlar sırasıyla
+// [{ tur, id, rakip, sonuc: "kazandi" | "kaybetti" | null }]
+export function oyuncuYolu(turlar, ad) {
+  const yol = [];
+  for (const tur of TUR_SIRASI) {
+    const mac = turlar[tur].find((m) => m.ust === ad || m.alt === ad);
+    if (!mac) break;
+    const rakip = mac.ust === ad ? mac.alt : mac.ust;
+    const sonuc = mac.kazanan ? (mac.kazanan === ad ? "kazandi" : "kaybetti") : null;
+    yol.push({ tur, id: mac.id, rakip, sonuc });
+  }
+  return yol;
+}
