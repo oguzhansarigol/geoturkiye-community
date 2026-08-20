@@ -12,7 +12,7 @@ import { TURNUVA_SAYFA_YOLU } from "./config.js";
 // ============================================================
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const SECIM = "turnuva_id, slug, torbalar, bolgeler, sonuclar, oyuncular, yayin_url, turnuvalar!inner(ad, aciklama, format, tarih)";
+const SECIM = "turnuva_id, slug, torbalar, bolgeler, sonuclar, oyuncular, yayin_url, turnuvalar!inner(ad, aciklama, format, tarih, katilim)";
 
 // Turnuvanın sayfa adresi (slug varsa onu, yoksa id'yi kullanır)
 export function turnuvaYolu(agac, canli = false) {

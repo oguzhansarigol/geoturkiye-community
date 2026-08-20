@@ -72,6 +72,7 @@ export default function Turnuva() {
           <Reveal delay={0.06}><h1>{turnuva.ad}</h1></Reveal>
           <Reveal delay={0.1}>
             <p className="t-kart-meta turnuva-hero-meta">
+              {turnuva.katilim === "davetli" && <span className="tag t-davetli">{t.etkinlikler.tDavetli}</span>}
               {turnuva.tarih && <span className="tag">{turnuva.tarih} · {s.saat}</span>}
               <span className="t-day">{TORBA_SAYISI * TORBA_BOYU} {s.secilmisOyuncu}</span>
             </p>
