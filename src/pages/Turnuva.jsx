@@ -6,7 +6,7 @@ import Btn from "../components/Btn.jsx";
 import AgacGorunum from "../components/AgacGorunum.jsx";
 import { OyuncuDetay, OyuncuKart, TurnuvaGeri, oyuncuDurumlari } from "../components/TurnuvaOyuncular.jsx";
 import { useTurnuvaSayfasi, turnuvaYolu } from "../turnuvaSayfa.js";
-import { guncelTur, TUR_SIRASI } from "../turnuvaAgaci.js";
+import { guncelTur, TUR_SIRASI, TORBA_SAYISI, TORBA_BOYU } from "../turnuvaAgaci.js";
 import { DISCORD_URL, SPONSOR_EPOSTA } from "../config.js";
 import { useLang } from "../i18n.jsx";
 
@@ -72,11 +72,15 @@ export default function Turnuva() {
           <Reveal delay={0.06}><h1>{turnuva.ad}</h1></Reveal>
           <Reveal delay={0.1}>
             <p className="t-kart-meta turnuva-hero-meta">
-              {turnuva.format && <span className="tag">{turnuva.format}</span>}
-              {turnuva.tarih && <span className="t-day">{turnuva.tarih}</span>}
-              {oyuncular.length > 0 && <span className="t-day">{oyuncular.length} {s.oyuncuSayisi}</span>}
+              {turnuva.tarih && <span className="tag">{turnuva.tarih} · {s.saat}</span>}
+              <span className="t-day">{TORBA_SAYISI * TORBA_BOYU} {s.secilmisOyuncu}</span>
             </p>
           </Reveal>
+          {turnuva.aciklama && (
+            <Reveal delay={0.14}>
+              <p className="lead">{turnuva.aciklama}</p>
+            </Reveal>
+          )}
           <Reveal delay={0.18}>
             <div className="turnuva-hero-btnler">
               <Btn to={turnuvaYolu(agac, true)} kind="red" arrow="→">
