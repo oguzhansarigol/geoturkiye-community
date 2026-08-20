@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabase.js";
 import { useGeoProfiller } from "./geoProfil.js";
 import { maclariHesapla } from "./turnuvaAgaci.js";
+import { TURNUVA_SAYFA_YOLU } from "./config.js";
 
 // ============================================================
 // Turnuva sayfası (/turnuva/:kimlik) ve canlı izleme sayfası için
@@ -16,6 +17,28 @@ const SECIM = "turnuva_id, slug, torbalar, bolgeler, sonuclar, oyuncular, yayin_
 // Turnuvanın sayfa adresi (slug varsa onu, yoksa id'yi kullanır)
 export function turnuvaYolu(agac, canli = false) {
   return `/turnuva/${agac.slug || agac.turnuva_id}${canli ? "/canli" : ""}`;
+}
+
+// Ana sayfadaki "Turnuva Ağacı" tuşunun adresi: yayındaki ağacı
+// Supabase'den bulur; slug elle yazılmış config yoluyla uyuşmasa da
+// link doğru sayfaya gider. Yüklenene kadar / yayında ağaç yoksa
+// config'teki yol kullanılır.
+export function useYayindakiTurnuvaYolu() {
+  const [yol, setYol] = useState(TURNUVA_SAYFA_YOLU);
+  useEffect(() => {
+    if (!supabase) return;
+    let iptal = false;
+    supabase
+      .from("turnuva_agaclari")
+      .select("slug, turnuva_id")
+      .eq("yayinda", true)
+      .limit(1)
+      .then(({ data, error }) => {
+        if (!iptal && !error && data?.[0]) setYol(turnuvaYolu(data[0]));
+      });
+    return () => { iptal = true; };
+  }, []);
+  return yol;
 }
 
 // Oyuncu adları: önce torbalar (torba sırasıyla 1 → 4), sonra kura

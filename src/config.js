@@ -14,9 +14,10 @@ export const GUNLUK_CHALLENGE_URL =
 // Turnuva yayınlarının yapıldığı YouTube kanalı
 export const TURNUVA_YAYIN_URL = "https://www.youtube.com/@oguzhansarigol";
 
-// Ana sayfadaki turnuva barındaki "Turnuva Ağacı" tuşunun gittiği sayfa
-// (admin panelinde ağaca verilen sayfa adresi / slug)
-export const TURNUVA_SAYFA_YOLU = "/turnuva/eylul-2026";
+// Ana sayfadaki "Turnuva Ağacı" tuşu normalde yayındaki ağacı
+// Supabase'den kendisi bulur; burası yalnızca ağaç henüz
+// yüklenmemişken / bulunamazsa kullanılan yedek adrestir.
+export const TURNUVA_SAYFA_YOLU = "/turnuva/5e0023a7-2596-4524-87ed-4b8495278ab4";
 
 // Davetli turnuva davet sayfası — sadece bu linki bilenler görür.
 // Slug'ı değiştirirseniz eski link geçersiz olur.

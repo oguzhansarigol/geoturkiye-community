@@ -344,10 +344,6 @@ export default function KuraYonetimi({ turnuva }) {
           </>
         }
       >
-        <p className="kura-aciklama">
-          Her satıra bir oyuncu: <code>Ad</code> + sekme/boşluk + <code>GeoGuessr profil linki</code>.
-          Avatar, ülke ve lig bilgisi bu linkten çekilir; torbalar bu listeden doldurulur.
-        </p>
         <textarea
           className="kura-metin"
           rows={10}
@@ -389,14 +385,6 @@ export default function KuraYonetimi({ turnuva }) {
           )
         }
       >
-        {kuraBasladi ? (
-          <p className="kura-aciklama">Kura çekildiği için torbalar değiştirilemez. Değiştirmek için önce kurayı sıfırlayın.</p>
-        ) : (
-          <p className="kura-aciklama">
-            Her torbaya {TORBA_BOYU} oyuncu seçin. Torba 1 ile 4, Torba 2 ile 3 ilk turda eşleşir.
-            {profilSayisi === 0 && " Önce oyuncu profillerini kaydedin."}
-          </p>
-        )}
         <div className="kura-torbalar">
           {TORBA_BASLIK.map((baslik, p) => {
             const dolu = torbaListe[p].length >= TORBA_BOYU;
@@ -492,16 +480,6 @@ export default function KuraYonetimi({ turnuva }) {
           </>
         }
       >
-        {!torbalarHazir ? (
-          <p className="kura-aciklama">Kura için 4 torbanın da {TORBA_BOYU} oyuncuyla kaydedilmiş olması gerekir.</p>
-        ) : kuraBitti ? (
-          <p className="kura-aciklama">Tüm bölgeler çekildi. Ağaç aşağıda; yeniden çekmek için kurayı sıfırlayın.</p>
-        ) : (
-          <p className="kura-aciklama">
-            Her "Kura Çek" basışı 4 torbadan birer oyuncu seçip sıradaki bölgeye koyar
-            (sırada: <b>Bölge {kayit.bolgeler.length + 1}</b>). "Hepsini Çek" kalan bölgeleri tek seferde tamamlar.
-          </p>
-        )}
         <ol className="kura-bolgeler">
           {Array.from({ length: BOLGE_SAYISI }, (_, i) => {
             const b = kayit.bolgeler[i];
@@ -525,19 +503,16 @@ export default function KuraYonetimi({ turnuva }) {
         onAc={() => bolumAc("agac")}
       >
         {kuraBasladi ? (
-          <>
-            <p className="kura-aciklama">Kazananı işaretlemek için oyuncuya tıklayın; tekrar tıklarsanız işaret kalkar. Değişiklikler anında kaydedilir.</p>
-            <AgacGorunum
-              bolgeler={kayit.bolgeler}
-              sonuclar={kayit.sonuclar}
-              turAdlari={TUR_ADLARI}
-              sampiyonEtiket="Şampiyon"
-              onKazanan={kazananSec}
-              yeniBolge={sonBolge}
-            />
-          </>
+          <AgacGorunum
+            bolgeler={kayit.bolgeler}
+            sonuclar={kayit.sonuclar}
+            turAdlari={TUR_ADLARI}
+            sampiyonEtiket="Şampiyon"
+            onKazanan={kazananSec}
+            yeniBolge={sonBolge}
+          />
         ) : (
-          <p className="kura-aciklama">Henüz kura çekilmedi.</p>
+          <p className="kura-cip-bos">Henüz kura çekilmedi.</p>
         )}
       </Bolum>
     </div>
