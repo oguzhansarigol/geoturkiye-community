@@ -7,19 +7,15 @@ import { maclariHesapla, TUR_SIRASI } from "../turnuvaAgaci.js";
 // eşit yükseklikte "slot"lara bölünür; ikili maç grupları (.agac-cift)
 // bir sonraki turun maçına dikey çizgiyle bağlanır.
 //
-// yeniBolge verilirse (admin kura çekimi) o bölgenin 4 oyuncusu
-// torba sırasına göre (1 → 2 → 3 → 4) gecikmeli belirir.
+// yeniMac verilirse (admin kura çekimi, ilk tur maç indeksi 0-15) o
+// maçın iki oyuncusu sırayla (üst → alt) gecikmeli belirir.
 //
 // avatarlar: { ad: görsel url } verilirse adın yanında avatar görünür.
 // onOyuncu: (ad) => void verilirse (turnuva sayfası) oyuncuya tıklanınca
 // çağrılır — onKazanan ile birlikte kullanılmaz.
 // ============================================================
 
-// İlk turda çift sıradaki maç Torba 1 vs 4, tek sıradaki maç Torba 2 vs 3'tür;
-// kura animasyonunun beliriş sırası torba numarasını izler.
-const KURA_SIRA = { "0-ust": 0, "1-ust": 1, "1-alt": 2, "0-alt": 3 };
-
-function Mac({ mac, onKazanan, onOyuncu, avatarlar, yeniKonum }) {
+function Mac({ mac, onKazanan, onOyuncu, avatarlar, yeni }) {
   const oynanabilir = Boolean(mac.ust && mac.alt);
   return (
     <div className="agac-mac">
@@ -27,7 +23,7 @@ function Mac({ mac, onKazanan, onOyuncu, avatarlar, yeniKonum }) {
         const oyuncu = mac[taraf];
         const kazandi = mac.kazanan != null && mac.kazanan === oyuncu;
         const kaybetti = mac.kazanan != null && !kazandi;
-        const sira = yeniKonum != null ? KURA_SIRA[`${yeniKonum}-${taraf}`] : null;
+        const sira = yeni && oyuncu ? (taraf === "ust" ? 0 : 1) : null;
         const avatar = avatarlar && oyuncu ? avatarlar[oyuncu] : null;
         const tiklanir = onKazanan ? oynanabilir && Boolean(oyuncu) : Boolean(onOyuncu && oyuncu);
         return (
@@ -57,7 +53,7 @@ function Mac({ mac, onKazanan, onOyuncu, avatarlar, yeniKonum }) {
   );
 }
 
-export default function AgacGorunum({ bolgeler, sonuclar, turAdlari, sampiyonEtiket, onKazanan, onOyuncu, avatarlar, yeniBolge }) {
+export default function AgacGorunum({ bolgeler, sonuclar, turAdlari, sampiyonEtiket, onKazanan, onOyuncu, avatarlar, yeniMac }) {
   const turlar = maclariHesapla(bolgeler, sonuclar);
   const sampiyon = turlar.f[0].kazanan;
   const sampiyonAvatar = avatarlar && sampiyon ? avatarlar[sampiyon] : null;
@@ -86,7 +82,7 @@ export default function AgacGorunum({ bolgeler, sonuclar, turAdlari, sampiyonEti
                           onKazanan={onKazanan}
                           onOyuncu={onOyuncu}
                           avatarlar={avatarlar}
-                          yeniKonum={tur === "r1" && yeniBolge != null && c === yeniBolge ? k : null}
+                          yeni={tur === "r1" && yeniMac != null && c * 2 + k === yeniMac}
                         />
                       </div>
                     ))}

@@ -6,6 +6,8 @@
 // Veri modeli (Supabase turnuva_agaclari tablosu):
 //   torbalar : [[8 ad], [8 ad], [8 ad], [8 ad]]
 //   bolgeler : [[torba1, torba2, torba3, torba4], ...] (en fazla 8)
+//              Kura eşleşme eşleşme çekilir; yarım kalmış bölge
+//              [torba1, null, null, torba4] biçiminde durabilir.
 //   sonuclar : { "r1-0": "kazanan adı", ... }
 // Maç kimlikleri: r1-0..15, r2-0..7, qf-0..3, sf-0..1, f-0
 // ============================================================
@@ -14,6 +16,16 @@ export const TUR_SIRASI = ["r1", "r2", "qf", "sf", "f"];
 export const BOLGE_SAYISI = 8;
 export const TORBA_SAYISI = 4;
 export const TORBA_BOYU = 8;
+export const MAC_SAYISI = BOLGE_SAYISI * 2; // ilk turdaki eşleşme sayısı
+
+// Kurada şu ana kadar çekilmiş ilk tur eşleşmesi sayısı.
+// Bir bölgede önce Torba 1 vs 4 (maç A), sonra Torba 2 vs 3 (maç B) çekilir.
+export function cekilenMacSayisi(bolgeler) {
+  return (bolgeler || []).reduce(
+    (n, b) => n + (b[0] && b[3] ? 1 : 0) + (b[1] && b[2] ? 1 : 0),
+    0
+  );
+}
 
 // Kayıtlı kazanan, maçın gerçek katılımcılarından biriyse geçerlidir.
 // Böylece önceki tur sonucu değiştiğinde eski (artık geçersiz) sonuçlar

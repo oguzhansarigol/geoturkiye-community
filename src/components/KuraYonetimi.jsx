@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Btn from "./Btn.jsx";
 import AgacGorunum from "./AgacGorunum.jsx";
 import { supabase } from "../supabase.js";
-import { kalanOyuncular, BOLGE_SAYISI, TORBA_BOYU } from "../turnuvaAgaci.js";
+import { kalanOyuncular, cekilenMacSayisi, MAC_SAYISI, TORBA_SAYISI, TORBA_BOYU } from "../turnuvaAgaci.js";
 import { useGeoProfiller } from "../geoProfil.js";
 
 // ============================================================
@@ -11,13 +11,13 @@ import { useGeoProfiller } from "../geoProfil.js";
 // "Kaydet" butonuyla yönetilir. Üstteki durum şeridi yayın ve sayfa
 // ayarlarını toplar.
 //   1. Oyuncu profilleri (ad + GeoGuessr linki)
-//   2. Torbalar (profil listesinden seçilerek, 4 × 8)
-//   3. Kura (her basışta bir bölge; 8 basışta ağaç tamamlanır)
+//   2. Torbalar (puan tablosu; puana göre sıralanıp 4 × 8 torbaya
+//      kendiliğinden yerleşir)
+//   3. Kura (her basışta bir eşleşme; 16 basışta ağaç tamamlanır)
 //   4. Ağaç (oyuncuya tıklayarak kazanan işaretlenir)
 // ============================================================
 
 const TORBA_BASLIK = ["Torba 1", "Torba 2", "Torba 3", "Torba 4"];
-const TORBA_ARALIK = ["1-8", "9-16", "17-24", "25-32"];
 const TUR_ADLARI = ["Son 32", "Son 16", "Çeyrek Final", "Yarı Final", "Final"];
 const URL_RE = /https?:\/\/\S+/;
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -66,12 +66,11 @@ function Bolum({ no, baslik, durum, tamam, acik, onAc, islemler, children }) {
 
 export default function KuraYonetimi({ turnuva }) {
   const [kayit, setKayit] = useState(undefined); // undefined = yükleniyor
-  const [torbaListe, setTorbaListe] = useState([[], [], [], []]); // düzenlenen torbalar (kaydedilmemiş olabilir)
-  const [elleAd, setElleAd] = useState(["", "", "", ""]);
+  const [puanlar, setPuanlar] = useState({}); // { ad: girdi metni } — torba sıralaması buradan türer
   const [hata, setHata] = useState("");
   const [mesaj, setMesaj] = useState(""); // kısa süreli başarı bildirimi
   const [bekliyor, setBekliyor] = useState(false);
-  const [sonBolge, setSonBolge] = useState(null); // animasyon: son çekilen bölge indeksi
+  const [sonMac, setSonMac] = useState(null); // animasyon: son çekilen eşleşme indeksi (0-15)
   const [profilMetni, setProfilMetni] = useState("");
   const [yayinUrl, setYayinUrl] = useState("");
   const [slug, setSlug] = useState("");
@@ -110,7 +109,7 @@ export default function KuraYonetimi({ turnuva }) {
         satir = yeni;
       }
       setKayit(satir);
-      setTorbaListe(satir.torbalar);
+      setPuanlar(Object.fromEntries(Object.entries(satir.puanlar || {}).map(([ad, p]) => [ad, String(p)])));
       setProfilMetni(profilleriMetneCevir(satir.oyuncular));
       setYayinUrl(satir.yayin_url || "");
       setSlug(satir.slug || "");
@@ -154,47 +153,44 @@ export default function KuraYonetimi({ turnuva }) {
   }
 
   // ---- Torbalar ----
-  function torbayaEkle(p, ad) {
-    const temiz = (ad || "").trim();
-    if (!temiz) return;
-    setHata("");
-    if (torbaListe.some((t) => t.includes(temiz))) { setHata(`"${temiz}" zaten bir torbada.`); return; }
-    if (torbaListe[p].length >= TORBA_BOYU) { setHata(`${TORBA_BASLIK[p]} dolu (${TORBA_BOYU} oyuncu).`); return; }
-    setTorbaListe((l) => l.map((t, i) => (i === p ? [...t, temiz] : t)));
+  // Girilen puan metni → sayı; boş/geçersizse null (sıralamada en sona düşer)
+  function puanDeger(ad) {
+    const n = parseFloat(String(puanlar[ad] ?? "").trim().replace(",", "."));
+    return Number.isFinite(n) ? n : null;
   }
 
-  function torbadanCikar(p, ad) {
-    setTorbaListe((l) => l.map((t, i) => (i === p ? t.filter((a) => a !== ad) : t)));
-  }
-
-  function torbalariKaydet() {
-    guncelle({ torbalar: torbaListe }, "Torbalar kaydedildi");
-  }
-
-  function torbalariGeriAl() {
-    setTorbaListe(kayit.torbalar);
-    setHata("");
+  function puanYaz(ad, deger) {
+    setPuanlar((p) => ({ ...p, [ad]: deger }));
   }
 
   // ---- Kura ----
+  // Her çağrıda "adet" eşleşme çeker. Bir bölgede önce Torba 1 vs 4,
+  // sonra Torba 2 vs 3 çekilir; yarım bölge [t1, null, null, t4] olur.
   async function kuraCek(adet) {
-    const onceki = kayit.bolgeler.length;
-    const bolgeler = [...kayit.bolgeler];
-    for (let i = 0; i < adet && bolgeler.length < BOLGE_SAYISI; i++) {
+    const bolgeler = kayit.bolgeler.map((b) => [...b]);
+    const ilkYeni = cekilenMacSayisi(bolgeler);
+    for (let i = 0; i < adet && cekilenMacSayisi(bolgeler) < MAC_SAYISI; i++) {
       const kalan = kalanOyuncular(kayit.torbalar, bolgeler);
-      bolgeler.push(kalan.map((torba) => torba[Math.floor(Math.random() * torba.length)]));
+      const rasgele = (p) => kalan[p][Math.floor(Math.random() * kalan[p].length)];
+      const son = bolgeler[bolgeler.length - 1];
+      if (son && son[1] == null) {
+        son[1] = rasgele(1);
+        son[2] = rasgele(2);
+      } else {
+        bolgeler.push([rasgele(0), null, null, rasgele(3)]);
+      }
     }
     const sonuc = await guncelle({ bolgeler }, null);
-    // Tek bölge çekildiyse o bölgenin oyuncuları animasyonla belirir
+    // Tek eşleşme çekildiyse kura listesinde (ve ağaçta) animasyonla belirir
     if (sonuc) {
-      setSonBolge(adet === 1 ? onceki : null);
-      setAcikBolum("agac");
+      setSonMac(adet === 1 ? ilkYeni : null);
+      if (adet !== 1) setAcikBolum("agac");
     }
   }
 
   async function kurayiSifirla() {
     if (!window.confirm("Kura ve tüm maç sonuçları silinsin mi? Bu işlem geri alınamaz.")) return;
-    setSonBolge(null);
+    setSonMac(null);
     const sonuc = await guncelle({ bolgeler: [], sonuclar: {} }, "Kura sıfırlandı");
     if (sonuc) setAcikBolum("kura");
   }
@@ -204,7 +200,7 @@ export default function KuraYonetimi({ turnuva }) {
     const sonuclar = { ...kayit.sonuclar };
     if (sonuclar[mac.id] === oyuncu) delete sonuclar[mac.id];
     else sonuclar[mac.id] = oyuncu;
-    setSonBolge(null);
+    setSonMac(null);
     guncelle({ sonuclar }, null);
   }
 
@@ -233,14 +229,45 @@ export default function KuraYonetimi({ turnuva }) {
 
   const torbalarHazir = kayit.torbalar.every((t) => t.length === TORBA_BOYU);
   const torbaAdlari = kayit.torbalar.flat();
-  const torbadakiler = torbaListe.flat();
-  const secilebilir = Object.keys(kayitliProfiller).filter((ad) => !torbadakiler.includes(ad));
-  const torbalarDegisti = JSON.stringify(torbaListe) !== JSON.stringify(kayit.torbalar);
-  const profilsiz = torbaAdlari.filter((ad) => !kayitliProfiller[ad]);
-  const fazlaProfil = Object.keys(kayitliProfiller).filter((ad) => torbaAdlari.length && !torbaAdlari.includes(ad));
+  const profilsiz = torbaAdlari.filter((ad) => ad && !kayitliProfiller[ad]);
+
+  // Puan tablosu: profil listesi + (varsa) kayıtlı torbalardaki adlar,
+  // puana göre büyükten küçüğe sıralanır; ilk 8 → Torba 1, sonraki 8 → Torba 2 …
+  const tumOyuncular = [...new Set([...Object.keys(kayitliProfiller), ...torbaAdlari])].filter(Boolean);
+  const siraliOyuncular = [...tumOyuncular].sort((a, b) => {
+    const pa = puanDeger(a), pb = puanDeger(b);
+    if (pa == null && pb == null) return a.localeCompare(b, "tr");
+    if (pa == null) return 1;
+    if (pb == null) return -1;
+    return pb - pa || a.localeCompare(b, "tr");
+  });
+  const turetilenTorbalar = Array.from({ length: TORBA_SAYISI }, (_, p) =>
+    siraliOyuncular.slice(p * TORBA_BOYU, (p + 1) * TORBA_BOYU)
+  );
+  const sayisalPuanlar = Object.fromEntries(
+    tumOyuncular.map((ad) => [ad, puanDeger(ad)]).filter(([, p]) => p != null)
+  );
+  const puanKolonuVar = "puanlar" in kayit; // supabase/turnuva-puanlar.sql çalıştırılmış mı?
+  // jsonb anahtar sırası korunmadığından puanlar sıradan bağımsız karşılaştırılır
+  const puanImza = (p) => JSON.stringify(Object.entries(p || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)));
+  const torbalarDegisti =
+    JSON.stringify(turetilenTorbalar) !== JSON.stringify(kayit.torbalar) ||
+    (puanKolonuVar && puanImza(sayisalPuanlar) !== puanImza(kayit.puanlar));
+
+  function torbalariKaydet() {
+    const degisiklik = { torbalar: turetilenTorbalar };
+    if (puanKolonuVar) degisiklik.puanlar = sayisalPuanlar;
+    guncelle(degisiklik, "Torbalar kaydedildi");
+  }
+
+  function torbalariGeriAl() {
+    setPuanlar(Object.fromEntries(Object.entries(kayit.puanlar || {}).map(([ad, p]) => [ad, String(p)])));
+    setHata("");
+  }
 
   const kuraBasladi = kayit.bolgeler.length > 0;
-  const kuraBitti = kayit.bolgeler.length >= BOLGE_SAYISI;
+  const cekilenMac = cekilenMacSayisi(kayit.bolgeler);
+  const kuraBitti = cekilenMac >= MAC_SAYISI;
   const sonucSayisi = Object.keys(kayit.sonuclar || {}).length;
 
   const sayfaYolu = `/turnuva/${kayit.slug || kayit.turnuva_id}`;
@@ -352,22 +379,21 @@ export default function KuraYonetimi({ turnuva }) {
           onChange={(e) => setProfilMetni(e.target.value)}
           spellCheck={false}
         />
-        {(profilsiz.length > 0 || fazlaProfil.length > 0) && (
+        {profilsiz.length > 0 && (
           <ul className="kura-notlar">
-            {profilsiz.length > 0 && <li><b>Linki olmayanlar:</b> {profilsiz.join(", ")}</li>}
-            {fazlaProfil.length > 0 && <li><b>Torbalarda olmayan adlar</b> (yazım farkı olabilir): {fazlaProfil.join(", ")}</li>}
+            <li><b>Linki olmayanlar:</b> {profilsiz.join(", ")}</li>
           </ul>
         )}
       </Bolum>
 
-      {/* ================= 2. Torbalar ================= */}
+      {/* ================= 2. Torbalar (puan tablosu) ================= */}
       <Bolum
         no={2}
         baslik="Torbalar"
         durum={
           kuraBasladi
             ? "Kura başladı · kilitli"
-            : `${torbadakiler.length}/${TORBA_BOYU * 4} oyuncu${torbalarDegisti ? " · kaydedilmemiş değişiklik" : ""}`
+            : `${Math.min(siraliOyuncular.length, TORBA_BOYU * TORBA_SAYISI)}/${TORBA_BOYU * TORBA_SAYISI} oyuncu${torbalarDegisti ? " · kaydedilmemiş değişiklik" : ""}`
         }
         tamam={torbalarHazir}
         acik={acikBolum === "torba"}
@@ -385,63 +411,78 @@ export default function KuraYonetimi({ turnuva }) {
           )
         }
       >
-        <div className="kura-torbalar">
-          {TORBA_BASLIK.map((baslik, p) => {
-            const dolu = torbaListe[p].length >= TORBA_BOYU;
-            return (
-              <div key={baslik} className={`kura-torba${dolu ? " dolu" : ""}`}>
-                <div className="kura-torba-ust">
-                  <span className="kura-torba-ad">{baslik}</span>
-                  <span className="kura-torba-sayi">{torbaListe[p].length}/{TORBA_BOYU} · sıra {TORBA_ARALIK[p]}</span>
-                </div>
-                <ul className="kura-cipler">
-                  {torbaListe[p].map((ad) => (
-                    <li key={ad} className="kura-cip">
-                      <span className="kura-cip-avatar" aria-hidden="true">
-                        {profiller[kayitliProfiller[ad]]?.avatar
-                          ? <img src={profiller[kayitliProfiller[ad]].avatar} alt="" />
-                          : ad[0]}
+        <p className="kura-aciklama">
+          Puanları elle girin; tablo puana göre kendiliğinden sıralanır ve oyuncular
+          sıralarına göre torbalara yerleşir: <b>1-8 → Torba 1</b>, 9-16 → Torba 2,
+          17-24 → Torba 3, 25-32 → Torba 4. Puanı boş kalanlar listenin sonuna düşer.
+        </p>
+        {!puanKolonuVar && (
+          <ul className="kura-notlar">
+            <li>
+              <b>Not:</b> Puanların kalıcı kaydolması için <code>supabase/turnuva-puanlar.sql</code> dosyasını
+              Supabase SQL Editor'de bir kez çalıştırın. Torba sıralaması yine de kaydedilir;
+              yalnızca girilen puanlar sayfa yenilenince kaybolur.
+            </li>
+          </ul>
+        )}
+        <div className="kura-puan-sarici">
+          <table className="kura-puan-tablo">
+            <thead>
+              <tr>
+                <th className="sag">#</th>
+                <th>Oyuncu</th>
+                <th className="sag">Puan</th>
+                <th>Torba</th>
+              </tr>
+            </thead>
+            <tbody>
+              {siraliOyuncular.map((ad, i) => {
+                const torbaNo = i < TORBA_BOYU * TORBA_SAYISI ? Math.floor(i / TORBA_BOYU) : null;
+                return (
+                  <tr key={ad} className={i > 0 && i % TORBA_BOYU === 0 ? "torba-basi" : undefined}>
+                    <td className="sag kura-puan-sira">{i + 1}</td>
+                    <td>
+                      <span className="kura-puan-oyuncu">
+                        <span className="kura-cip-avatar" aria-hidden="true">
+                          {profiller[kayitliProfiller[ad]]?.avatar
+                            ? <img src={profiller[kayitliProfiller[ad]].avatar} alt="" />
+                            : ad[0]}
+                        </span>
+                        <span className="kura-cip-ad" title={ad}>{ad}</span>
+                        {!kayitliProfiller[ad] && <span className="kura-cip-uyari" title="Profil linki yok">!</span>}
                       </span>
-                      <span className="kura-cip-ad" title={ad}>{ad}</span>
-                      {!kayitliProfiller[ad] && <span className="kura-cip-uyari" title="Profil linki yok">!</span>}
-                      {!kuraBasladi && (
-                        <button type="button" className="kura-cip-sil" onClick={() => torbadanCikar(p, ad)} aria-label={`${ad} çıkar`}>×</button>
-                      )}
-                    </li>
-                  ))}
-                  {torbaListe[p].length === 0 && <li className="kura-cip-bos">Boş</li>}
-                </ul>
-                {!kuraBasladi && !dolu && (
-                  <div className="kura-ekle">
-                    <select
-                      className="kura-girdi"
-                      value=""
-                      onChange={(e) => torbayaEkle(p, e.target.value)}
-                      disabled={secilebilir.length === 0}
-                    >
-                      <option value="">{secilebilir.length ? "Oyuncu ekle…" : "Listede oyuncu kalmadı"}</option>
-                      {secilebilir.map((ad) => <option key={ad} value={ad}>{ad}</option>)}
-                    </select>
-                    <input
-                      className="kura-girdi"
-                      type="text"
-                      placeholder="veya ad yaz + Enter"
-                      value={elleAd[p]}
-                      onChange={(e) => setElleAd((m) => m.map((v, i) => (i === p ? e.target.value : v)))}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          torbayaEkle(p, elleAd[p]);
-                          setElleAd((m) => m.map((v, i) => (i === p ? "" : v)));
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    </td>
+                    <td className="sag">
+                      <input
+                        className="kura-girdi kura-puan-girdi"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="—"
+                        value={puanlar[ad] ?? ""}
+                        onChange={(e) => puanYaz(ad, e.target.value)}
+                        disabled={kuraBasladi}
+                        aria-label={`${ad} puanı`}
+                      />
+                    </td>
+                    <td>
+                      <span className={`kura-puan-torba${torbaNo == null ? " yok" : ""}`}>
+                        {torbaNo == null ? "Torba dışı" : TORBA_BASLIK[torbaNo]}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+              {siraliOyuncular.length === 0 && (
+                <tr><td colSpan={4} className="kura-cip-bos">Önce oyuncu profillerini kaydedin.</td></tr>
+              )}
+            </tbody>
+          </table>
         </div>
+        {siraliOyuncular.length > TORBA_BOYU * TORBA_SAYISI && (
+          <ul className="kura-notlar">
+            <li><b>Uyarı:</b> {siraliOyuncular.length - TORBA_BOYU * TORBA_SAYISI} oyuncu sıralamada ilk 32'nin dışında kaldığı için torbalara girmeyecek.</li>
+          </ul>
+        )}
       </Bolum>
 
       {/* ================= 3. Kura ================= */}
@@ -452,7 +493,7 @@ export default function KuraYonetimi({ turnuva }) {
           kuraBitti
             ? "Tamamlandı"
             : kuraBasladi
-              ? `${kayit.bolgeler.length}/${BOLGE_SAYISI} bölge çekildi`
+              ? `${cekilenMac}/${MAC_SAYISI} eşleşme çekildi`
               : torbalarHazir
                 ? "Hazır"
                 : "Torbalar tamamlanınca açılır"
@@ -468,7 +509,7 @@ export default function KuraYonetimi({ turnuva }) {
               </button>
             )}
             {!kuraBitti && torbalarHazir && (
-              <button type="button" className="admin-mini" onClick={() => kuraCek(BOLGE_SAYISI)} disabled={bekliyor}>
+              <button type="button" className="admin-mini" onClick={() => kuraCek(MAC_SAYISI)} disabled={bekliyor}>
                 Hepsini Çek
               </button>
             )}
@@ -480,13 +521,42 @@ export default function KuraYonetimi({ turnuva }) {
           </>
         }
       >
-        <ol className="kura-bolgeler">
-          {Array.from({ length: BOLGE_SAYISI }, (_, i) => {
-            const b = kayit.bolgeler[i];
+        <p className="kura-aciklama">
+          Her <b>Kura Çek</b> basışında bir eşleşme çekilir ve aşağıda animasyonla belirir.
+          Çift sıradaki maçlar Torba 1 - Torba 4, tek sıradakiler Torba 2 - Torba 3 arasındadır.
+        </p>
+        <ol className="kura-maclar">
+          {Array.from({ length: MAC_SAYISI }, (_, m) => {
+            const b = kayit.bolgeler[Math.floor(m / 2)];
+            const ust = b ? (m % 2 === 0 ? b[0] : b[1]) : null;
+            const alt = b ? (m % 2 === 0 ? b[3] : b[2]) : null;
+            const cekildi = Boolean(ust && alt);
             return (
-              <li key={i} className={`kura-bolge${b ? " cekildi" : ""}`}>
-                <span className="kura-bolge-no">B{i + 1}</span>
-                <span className="kura-bolge-ad">{b ? b.join(" · ") : "—"}</span>
+              <li key={m} className={`kura-mac${cekildi ? " cekildi" : ""}${cekildi && sonMac === m ? " kura-mac--yeni" : ""}`}>
+                <span className="kura-mac-no">B{Math.floor(m / 2) + 1}·M{m + 1}</span>
+                {cekildi ? (
+                  <>
+                    <span className="kura-mac-taraf ust">
+                      <span className="kura-cip-avatar" aria-hidden="true">
+                        {profiller[kayitliProfiller[ust]]?.avatar
+                          ? <img src={profiller[kayitliProfiller[ust]].avatar} alt="" />
+                          : ust[0]}
+                      </span>
+                      <span className="kura-cip-ad" title={ust}>{ust}</span>
+                    </span>
+                    <span className="kura-mac-vs">vs</span>
+                    <span className="kura-mac-taraf alt">
+                      <span className="kura-cip-ad" title={alt}>{alt}</span>
+                      <span className="kura-cip-avatar" aria-hidden="true">
+                        {profiller[kayitliProfiller[alt]]?.avatar
+                          ? <img src={profiller[kayitliProfiller[alt]].avatar} alt="" />
+                          : alt[0]}
+                      </span>
+                    </span>
+                  </>
+                ) : (
+                  <span className="kura-mac-bos">Henüz çekilmedi</span>
+                )}
               </li>
             );
           })}
@@ -509,7 +579,7 @@ export default function KuraYonetimi({ turnuva }) {
             turAdlari={TUR_ADLARI}
             sampiyonEtiket="Şampiyon"
             onKazanan={kazananSec}
-            yeniBolge={sonBolge}
+            yeniMac={sonMac}
           />
         ) : (
           <p className="kura-cip-bos">Henüz kura çekilmedi.</p>

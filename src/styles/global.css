@@ -1542,32 +1542,8 @@ html[data-theme="dark"] .kura-bolum-baslik:hover { background: var(--paper); }
 }
 .kura-girdi:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--red); }
 
-/* Torbalar */
-.kura-torbalar {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 12px;
-}
-.kura-torba {
-  display: flex; flex-direction: column; gap: 8px;
-  border: 1px solid var(--line); border-radius: var(--radius); padding: 10px;
-  background: var(--paper);
-}
-html[data-theme="dark"] .kura-torba { background: var(--paper-2); }
-.kura-torba.dolu { border-color: color-mix(in srgb, #1d7a3d 45%, transparent); }
-.kura-torba-ust { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.kura-torba-ad { font-weight: 600; font-size: 14.5px; }
-.kura-torba-sayi { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.04em; color: var(--ink-2); }
-.kura-torba.dolu .kura-torba-sayi { color: #1d7a3d; }
-.kura-cipler {
-  list-style: none; display: flex; flex-direction: column; gap: 4px;
-  min-height: 44px; padding: 6px; border: 1px dashed var(--line); border-radius: var(--radius);
-}
+/* Oyuncu hücresi parçaları (puan tablosu + kura eşleşme kartları) */
 .kura-cip-bos { font-size: 13px; color: var(--ink-2); padding: 6px 4px; }
-.kura-cip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 6px 4px 4px; border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--paper); font-size: 14px;
-}
 .kura-cip-avatar {
   flex: none; width: 24px; height: 24px; border-radius: 50%; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center;
@@ -1576,27 +1552,77 @@ html[data-theme="dark"] .kura-torba { background: var(--paper-2); }
 .kura-cip-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .kura-cip-ad { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .kura-cip-uyari { color: var(--red); font-weight: 700; font-family: var(--font-mono); }
-.kura-cip-sil { width: 22px; height: 22px; border-radius: 50%; color: var(--ink-2); font-size: 16px; line-height: 1; }
-.kura-cip-sil:hover { background: var(--paper-2); color: var(--red); }
-.kura-ekle { display: flex; flex-direction: column; gap: 6px; }
-.kura-ekle .kura-girdi { font-size: 13.5px; padding: 8px 10px; }
 
-/* Kura bölgeleri listesi */
-.kura-bolgeler {
-  list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 6px 14px;
+/* Torba puan tablosu: puanlar elle girilir, sıralama puana göre
+   kendiliğinden değişir, oyuncular sıraya göre torbalara yerleşir */
+.kura-puan-sarici { overflow-x: auto; }
+.kura-puan-tablo { width: 100%; border-collapse: collapse; font-size: 14px; }
+.kura-puan-tablo th {
+  font-family: var(--font-mono); font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2);
+  text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line);
 }
-.kura-bolge {
-  display: flex; align-items: center; gap: 10px; font-size: 13.5px;
-  padding: 6px 8px; border-radius: var(--radius); border: 1px dashed var(--line); color: var(--ink-2);
+.kura-puan-tablo td { padding: 5px 10px; border-bottom: 1px dashed var(--line); }
+.kura-puan-tablo .sag { text-align: right; }
+.kura-puan-tablo tr.torba-basi td { border-top: 1px solid var(--line); }
+.kura-puan-sira { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); width: 36px; }
+.kura-puan-oyuncu { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.kura-puan-girdi { width: 86px; text-align: right; padding: 5px 8px; font-size: 13.5px; }
+.kura-puan-torba {
+  font-family: var(--font-mono); font-size: 11.5px; font-weight: 700;
+  letter-spacing: 0.04em; color: var(--red); white-space: nowrap;
 }
-.kura-bolge.cekildi { border-style: solid; color: var(--ink); }
-.kura-bolge-no {
-  flex: none; font-family: var(--font-mono); font-size: 11.5px; font-weight: 700;
+.kura-puan-torba.yok { color: var(--ink-2); font-weight: 400; }
+
+/* Kura eşleşme listesi: her "Kura Çek" basışında bir maç çekilir ve
+   kart animasyonla belirir (üst oyuncu soldan, alt oyuncu sağdan) */
+.kura-maclar {
+  list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px 14px;
+}
+.kura-mac {
+  display: flex; align-items: center; gap: 8px; font-size: 13.5px;
+  padding: 7px 10px; border-radius: var(--radius); border: 1px dashed var(--line); color: var(--ink-2);
+}
+.kura-mac.cekildi { border-style: solid; color: var(--ink); background: var(--paper); }
+html[data-theme="dark"] .kura-mac.cekildi { background: var(--paper-2); }
+.kura-mac-no {
+  flex: none; font-family: var(--font-mono); font-size: 11px; font-weight: 700;
   letter-spacing: 0.04em; color: var(--ink-2);
 }
-.kura-bolge.cekildi .kura-bolge-no { color: var(--red); }
-.kura-bolge-ad { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kura-mac.cekildi .kura-mac-no { color: var(--red); }
+.kura-mac-bos { font-size: 13px; }
+.kura-mac-taraf { flex: 1; min-width: 0; display: inline-flex; align-items: center; gap: 7px; }
+.kura-mac-taraf.alt { justify-content: flex-end; }
+.kura-mac-vs {
+  flex: none; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2);
+}
+.kura-mac.cekildi .kura-mac-vs { color: var(--red); }
+@keyframes kura-mac-gel {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 30%, transparent); }
+  100% { transform: none; box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes kura-taraf-sol {
+  0%   { opacity: 0; transform: translateX(-16px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes kura-taraf-sag {
+  0%   { opacity: 0; transform: translateX(16px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes kura-vs-pat {
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { opacity: 1; transform: scale(1.4); }
+  100% { opacity: 1; transform: none; }
+}
+.kura-mac--yeni { animation: kura-mac-gel 1.2s ease both; }
+.kura-mac--yeni .kura-mac-taraf.ust { animation: kura-taraf-sol 0.5s ease both 0.1s; }
+.kura-mac--yeni .kura-mac-vs { animation: kura-vs-pat 0.45s ease both 0.55s; }
+.kura-mac--yeni .kura-mac-taraf.alt { animation: kura-taraf-sag 0.5s ease both 0.85s; }
+@media (prefers-reduced-motion: reduce) {
+  .kura-mac--yeni, .kura-mac--yeni .kura-mac-taraf, .kura-mac--yeni .kura-mac-vs { animation: none; opacity: 1; }
+}
 
 /* Dikey form düzeni (kulüp başvurusu) */
 .t-form-dikey .t-form-grid { grid-template-columns: 1fr; max-width: 520px; }
