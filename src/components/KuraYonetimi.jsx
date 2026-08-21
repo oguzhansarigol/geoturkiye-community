@@ -411,20 +411,6 @@ export default function KuraYonetimi({ turnuva }) {
           )
         }
       >
-        <p className="kura-aciklama">
-          Puanları elle girin; tablo puana göre kendiliğinden sıralanır ve oyuncular
-          sıralarına göre torbalara yerleşir: <b>1-8 → Torba 1</b>, 9-16 → Torba 2,
-          17-24 → Torba 3, 25-32 → Torba 4. Puanı boş kalanlar listenin sonuna düşer.
-        </p>
-        {!puanKolonuVar && (
-          <ul className="kura-notlar">
-            <li>
-              <b>Not:</b> Puanların kalıcı kaydolması için <code>supabase/turnuva-puanlar.sql</code> dosyasını
-              Supabase SQL Editor'de bir kez çalıştırın. Torba sıralaması yine de kaydedilir;
-              yalnızca girilen puanlar sayfa yenilenince kaybolur.
-            </li>
-          </ul>
-        )}
         <div className="kura-puan-sarici">
           <table className="kura-puan-tablo">
             <thead>
