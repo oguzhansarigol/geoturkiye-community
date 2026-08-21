@@ -30,13 +30,6 @@ export default function Turnuva() {
     () => (turlar ? oyuncuDurumlari(turlar, oyuncular.map((o) => o.ad)) : {}),
     [turlar, oyuncular]
   );
-  const torbaNo = useCallback(
-    (ad) => {
-      const i = (agac?.torbalar || []).findIndex((tb) => tb.includes(ad));
-      return i === -1 ? null : i + 1;
-    },
-    [agac]
-  );
   const kapat = useCallback(() => setSeciliAd(null), []);
   const ac = useCallback((ad) => { if (ad) setSeciliAd(ad); }, []);
 
@@ -143,7 +136,6 @@ export default function Turnuva() {
                 <OyuncuKart
                   oyuncu={o}
                   durum={durumlar[o.ad] || "devam"}
-                  torbaNo={torbaNo(o.ad)}
                   s={s}
                   onClick={(oy) => ac(oy.ad)}
                 />
@@ -160,7 +152,6 @@ export default function Turnuva() {
           turAdlari={turAdlari}
           avatarlar={avatarlar}
           durum={durumlar[secili.ad] || "devam"}
-          torbaNo={torbaNo(secili.ad)}
           s={s}
           onKapat={kapat}
           onOyuncu={ac}

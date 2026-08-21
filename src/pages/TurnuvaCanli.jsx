@@ -55,11 +55,6 @@ export default function TurnuvaCanli() {
   const tur = guncelTur(turlar);
   const sampiyon = turlar.f[0].kazanan;
   const secili = seciliAd ? oyuncuMap[seciliAd] || { ad: seciliAd, profil: null, profilUrl: null } : null;
-  const torbaNo = (ad) => {
-    const i = (agac.torbalar || []).findIndex((tb) => tb.includes(ad));
-    return i === -1 ? null : i + 1;
-  };
-
   return (
     <Page title={`${turnuva.ad} · ${s.canliTitle}`} description={turnuva.aciklama || s.desc}>
       <section className="page-hero canli-hero">
@@ -146,7 +141,6 @@ export default function TurnuvaCanli() {
           turAdlari={turAdlari}
           avatarlar={avatarlar}
           durum={durumlar[secili.ad] || "devam"}
-          torbaNo={torbaNo(secili.ad)}
           s={s}
           onKapat={kapat}
           onOyuncu={ac}
