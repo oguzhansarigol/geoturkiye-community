@@ -231,9 +231,11 @@ export default function KuraYonetimi({ turnuva }) {
   const torbaAdlari = kayit.torbalar.flat();
   const profilsiz = torbaAdlari.filter((ad) => ad && !kayitliProfiller[ad]);
 
-  // Puan tablosu: profil listesi + (varsa) kayıtlı torbalardaki adlar,
-  // puana göre büyükten küçüğe sıralanır; ilk 8 → Torba 1, sonraki 8 → Torba 2 …
-  const tumOyuncular = [...new Set([...Object.keys(kayitliProfiller), ...torbaAdlari])].filter(Boolean);
+  // Puan tablosu: profil listesindeki oyuncular (profil listesi tek kaynak;
+  // profilden silinen oyuncu kaydedilince torbadan da düşer) puana göre
+  // büyükten küçüğe sıralanır; ilk 8 → Torba 1, sonraki 8 → Torba 2 …
+  // Profil listesi boşsa eski kayıtlı torbalar gösterilir.
+  const tumOyuncular = (profilSayisi > 0 ? Object.keys(kayitliProfiller) : torbaAdlari).filter(Boolean);
   const siraliOyuncular = [...tumOyuncular].sort((a, b) => {
     const pa = puanDeger(a), pb = puanDeger(b);
     if (pa == null && pb == null) return a.localeCompare(b, "tr");
