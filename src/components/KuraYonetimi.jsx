@@ -507,10 +507,6 @@ export default function KuraYonetimi({ turnuva }) {
           </>
         }
       >
-        <p className="kura-aciklama">
-          Her <b>Kura Çek</b> basışında bir eşleşme çekilir ve aşağıda animasyonla belirir.
-          Çift sıradaki maçlar Torba 1 - Torba 4, tek sıradakiler Torba 2 - Torba 3 arasındadır.
-        </p>
         <ol className="kura-maclar">
           {Array.from({ length: MAC_SAYISI }, (_, m) => {
             const b = kayit.bolgeler[Math.floor(m / 2)];
